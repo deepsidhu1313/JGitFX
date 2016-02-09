@@ -1,9 +1,5 @@
 group = 'com.jgitfx.jgitfx-demo'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile project(":jgitfx")
 }
