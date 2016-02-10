@@ -1,10 +1,14 @@
 # JGitFX
 JGitFX provides easy Git integration (via JGit) with your JavaFX application (view commit history, add Git menu items or buttons, etc.). This is NOT another Git Client.
 
-# Goals
+## ToC
+[Goals](#goals)
+[License](#license)
+
+## Goals
 The goals of this project are to provide:
-- A default `Menu` containing all the Git options one wants as its `MenuItem`s that can be easily added to an applicatoni's `MenuBar`
- - create a new repository
+- `MenuItem`s configured to their corresponding Git command that can be easily added to an application's `Menu` or `MenuBar`
+ - Create a new repository
  - push, pull, commit, etc.
 - Git-specific `Button`s that can be placed anywhere throughout the SceneGraph
  - push, pull, commit
@@ -17,5 +21,14 @@ The goals of this project are to provide:
  - a file tree view that displays which files were changed
 - A merge / compare dialog used for merging/comparing  
 
-# License
-Licensed under the BSD-Clause-2 license
+## Thanks
+Many thanks to the [jgit-cookbook] for the code snippets as it makes writing this library a heck of a lot easier!
+
+## Licenses
+Licensed under the [BSD 2-Clause license]
+[JGit] is licensed under the [EDL].
+
+[JGit]: http://eclipse.org/jgit/
+[jgit-cookbook]: https://github.com/centic9/jgit-cookbook
+[EDL]: http://www.eclipse.org/org/documents/edl-v10.php
+[BSD 2-Clause License]: http://www.opensource.org/licenses/bsd-license.php
