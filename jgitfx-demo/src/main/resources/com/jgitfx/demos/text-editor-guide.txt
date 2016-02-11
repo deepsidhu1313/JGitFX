@@ -1,0 +1,8 @@
+Directions to follow:
+1. Create a new repository (Git::create a new repository).
+2. Close demo and restart it.
+3. Open the previously created one (Git::open a repository)
+4. Create random files (File::Create random files)
+5. Select a few of the random files you just created (File::select files)
+6. Add those files (Git::Add File(s) )
+7. Commit those files (Git::Commit...)
