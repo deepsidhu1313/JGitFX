@@ -1,9 +1,12 @@
+apply plugin: 'groovy'
+
 group = 'com.jgitfx.jgitfx'
 
 repositories {
     maven {
         url "https://repo.eclipse.org/content/groups/releases/"
     }
+    jcenter()
 }
 dependencies {
     // JGit dependencies
@@ -16,6 +19,10 @@ dependencies {
     // Spock framework
     testCompile 'org.codehaus.groovy:groovy-all:2.4.5'
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+    // Spock reports
+    testCompile( 'com.athaydes:spock-reports:1.2.8' ) {
+        transitive = false // this avoids affecting your version of Groovy/Spock
+    }
 }
 
 javadoc {
@@ -27,6 +34,12 @@ javadoc {
             'http://docs.oracle.com/javase/8/docs/api/',
             'http://docs.oracle.com/javase/8/javafx/api/'
     ]
+}
+
+test {
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
