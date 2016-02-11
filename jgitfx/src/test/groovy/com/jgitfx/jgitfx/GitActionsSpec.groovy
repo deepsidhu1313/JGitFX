@@ -58,7 +58,7 @@ class GitActionsSpec extends Specification {
         git.repository.getDirectory() == gitRepoDir
 
         // when other tests are implemented, remove this cleanup so others can use the sample Git repository
-        cleanup: "close but do not delete the repo so it can be used for next test"
+        cleanup: "close and delete the repo"
         git.repository.close()
         git.close()
         gitRepoDir.deleteDir()
