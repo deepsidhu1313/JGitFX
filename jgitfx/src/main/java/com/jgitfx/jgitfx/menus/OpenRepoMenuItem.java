@@ -8,6 +8,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.io.File;
 import java.util.function.Consumer;
 
+import static com.jgitfx.jgitfx.GitActions.openRepo;
+
 /**
  * OpenRepoMenuItem is a MenuItem that will open a repository from local storage and return
  * that opened repository as a {@link Git} object via its {@link #postOpenRepository}.
@@ -33,7 +35,7 @@ public class OpenRepoMenuItem extends RepoMenuItemBase {
             File gitRepoDir = createChooser("Open a Repository ('.git' folder)...").showDialog(window);
             if (gitRepoDir != null && gitRepoDir.toString().endsWith(".git")) {
                 try {
-                    Git git = Git.init().setGitDir(gitRepoDir).call();
+                    Git git = openRepo(gitRepoDir);
                     postOpenRepository.accept(git);
                 } catch (GitAPIException ex) {
                     ex.printStackTrace();

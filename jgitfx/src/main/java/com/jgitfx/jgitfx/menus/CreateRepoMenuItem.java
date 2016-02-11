@@ -8,6 +8,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.io.File;
 import java.util.function.Consumer;
 
+import static com.jgitfx.jgitfx.GitActions.createRepoIn;
+
 /**
  * CreateRepoMenuItem is a MenuItem that will create a new repository and
  * return its output as a {@link Git} object when clicked via its {@link #postRepositoryCreation}.
@@ -34,10 +36,10 @@ public class CreateRepoMenuItem extends RepoMenuItemBase {
         super("Create a new Repository...", directory, graphic);
         setPostRepositoryCreation(afterCreationConsumer);
         setOnAction(ae -> {
-            File repoDir = createChooser("Choose where to create a new Repository").showDialog(window);
-            if (repoDir != null) {
+            File parentDir = createChooser("Choose the parent directory of the new Repository").showDialog(window);
+            if (parentDir != null) {
                 try {
-                    Git git = Git.init().setDirectory(repoDir).call();
+                    Git git = createRepoIn(parentDir);
                     postRepositoryCreation.accept(git);
                 } catch (GitAPIException e) {
                     e.printStackTrace();
@@ -49,8 +51,8 @@ public class CreateRepoMenuItem extends RepoMenuItemBase {
     /**
      * The same constructor as {@link #CreateRepoMenuItem(Window, File, Consumer, Node)} but without a graphic
      */
-    public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationFunction) {
-        this(window, directory, afterCreationFunction, null);
+    public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationConsumer) {
+        this(window, directory, afterCreationConsumer, null);
     }
 
 }

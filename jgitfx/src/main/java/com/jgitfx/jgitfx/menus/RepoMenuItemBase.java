@@ -10,7 +10,6 @@ import java.io.File;
  * Base class used for Repository-related MenuItems such as {@link CreateRepoMenuItem}
  * and {@link OpenRepoMenuItem}; essentially, provides the convenient
  * {@link #createChooser(String)} method and its related {@link #initialDirectory} bean.
- *
  */
 public abstract class RepoMenuItemBase extends MenuItem {
 
