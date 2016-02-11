@@ -3,11 +3,9 @@ package com.jgitfx.jgitfx.menus;
 import javafx.scene.Node;
 import javafx.stage.Window;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.function.Consumer;
 
 /**
@@ -32,17 +30,12 @@ public class OpenRepoMenuItem extends RepoMenuItemBase {
         super("Open a Repository...", directory, graphic);
         setPostOpenRepository(afterOpeningConsumer);
         setOnAction(ae -> {
-            File repoDir = createChooser("Open a Repository...").showDialog(window);
-            if (repoDir != null && repoDir.toString().endsWith(".git")) {
+            File gitRepoDir = createChooser("Open a Repository ('.git' folder)...").showDialog(window);
+            if (gitRepoDir != null && gitRepoDir.toString().endsWith(".git")) {
                 try {
-                    Repository repo = new FileRepositoryBuilder()
-                            .setGitDir(repoDir)
-                            .readEnvironment()
-                            .findGitDir()
-                            .build();
-                    Git git = new Git(repo);
+                    Git git = Git.init().setGitDir(gitRepoDir).call();
                     postOpenRepository.accept(git);
-                } catch (IOException ex) {
+                } catch (GitAPIException ex) {
                     ex.printStackTrace();
                 }
             }
