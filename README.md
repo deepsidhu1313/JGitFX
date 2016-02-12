@@ -3,6 +3,7 @@ JGitFX provides easy Git integration (via JGit) with your JavaFX application (vi
 
 ## ToC
 [Goals](#goals)
+
 [License](#license)
 
 ## Goals
@@ -26,6 +27,7 @@ Many thanks to the [jgit-cookbook] for the code snippets as it makes writing thi
 
 ## Licenses
 Licensed under the [BSD 2-Clause license]
+
 [JGit] is licensed under the [EDL].
 
 [JGit]: http://eclipse.org/jgit/
