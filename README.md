@@ -2,25 +2,31 @@
 JGitFX provides easy Git integration (via JGit) with your JavaFX application (view commit history, add Git menu items or buttons, etc.). This is NOT another Git Client.
 
 ## ToC
-[Goals](#goals)
+[Roadmap](#roadmap)
 
 [License](#license)
 
-## Goals
-The goals of this project are to provide:
-- `MenuItem`s configured to their corresponding Git command that can be easily added to an application's `Menu` or `MenuBar`
- - Create a new repository
- - push, pull, commit, etc.
-- Git-specific `Button`s that can be placed anywhere throughout the SceneGraph
- - push, pull, commit
- - merge, rebase, cherry-pick
- - reset, revert, etc.
-- A Commit History view that displays
- - the commits (message, author, date, hash)
- - the graphical branches and their connections/history
- - a details pane that displays more information about the selected commit
- - a file tree view that displays which files were changed
-- A merge / compare dialog used for merging/comparing  
+## Roadmap
+
+[ ] Easily-addable `MenuItem`s
+ - [x] Create local repository
+ - [x] Open local repository
+ - [ ] Commit (opens a commit dialog)
+[ ] Useful, customizable `Dialog`s
+ - [ ] Commit: choose which files to add and then commit
+ - [ ] Merge: choose which branch to accept or merge a file by-hand
+ - [ ] Compare: compare two versions of the same file
+ - [ ] Push: choose which remote to which to push commits
+ - [ ] Pull:
+[ ] Useful `Button`s that can be placed anywhere throughout the SceneGraph
+ - [ ] commit
+ - [ ] push
+ - [ ] pull
+ - [ ] fetch
+[ ] Useful views
+ - [ ] Customizable Directory Watcher (watches filesystem for changes and uses colors to distinguish different files and their status: 
+    Ignored, Unchanged, Modified (and staged), newly added (and staged),
+ - [ ] A Commit History view that displays commit info, graphical branches, and file tree view showing which files were changed in a selected commit  
 
 ## Thanks
 Many thanks to the [jgit-cookbook] for the code snippets as it makes writing this library a heck of a lot easier!
