@@ -11,8 +11,9 @@ JGitFX provides easy Git integration (via JGit) with your JavaFX application (vi
 - [ ] Easily-addable `MenuItem`s
  - [x] Create local repository
  - [x] Open local repository
- - [ ] Commit (opens a commit dialog)
-
+ - [ ] Commit: opens a commit dialog
+ - [ ] Push: opens a push dialog
+ - [ ] Pull: opens a pull dialog
 - [ ] Useful, customizable `Dialog`s
  - [ ] Commit: choose which files to add and then commit
  - [ ] Merge: choose which branch to accept or merge a file by-hand
