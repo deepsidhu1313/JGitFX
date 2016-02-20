@@ -8,22 +8,23 @@ JGitFX provides easy Git integration (via JGit) with your JavaFX application (vi
 
 ## Roadmap
 
-[ ] Easily-addable `MenuItem`s
+- [ ] Easily-addable `MenuItem`s
  - [x] Create local repository
  - [x] Open local repository
  - [ ] Commit (opens a commit dialog)
-[ ] Useful, customizable `Dialog`s
+
+- [ ] Useful, customizable `Dialog`s
  - [ ] Commit: choose which files to add and then commit
  - [ ] Merge: choose which branch to accept or merge a file by-hand
  - [ ] Compare: compare two versions of the same file
  - [ ] Push: choose which remote to which to push commits
  - [ ] Pull:
-[ ] Useful `Button`s that can be placed anywhere throughout the SceneGraph
+- [ ] Useful `Button`s that can be placed anywhere throughout the SceneGraph
  - [ ] commit
  - [ ] push
  - [ ] pull
  - [ ] fetch
-[ ] Useful views
+- [ ] Useful views
  - [ ] Customizable Directory Watcher (watches filesystem for changes and uses colors to distinguish different files and their status: 
     Ignored, Unchanged, Modified (and staged), newly added (and staged),
  - [ ] A Commit History view that displays commit info, graphical branches, and file tree view showing which files were changed in a selected commit  
