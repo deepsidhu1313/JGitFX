@@ -42,6 +42,7 @@ public class CommitDialogPane extends DialogPane {
         setContent(root);
 
         getButtonTypes().addAll(COMMIT, CANCEL);
+        lookupButton(COMMIT).disableProperty().bind(fileViewer.hasSelectedFilesProperty());
     }
 
     public final CommitModel getModel() {
