@@ -16,6 +16,9 @@ dependencies {
     // SLF4J - to get around an exception (See http://www.slf4j.org/codes/html#StaticLoggerBinder)
     compile 'org.slf4j:slf4j-simple:1.7.13'
 
+    // ReactFX
+    compile group: 'org.reactfx', name: 'reactfx', version: '2.0-SNAPSHOT'
+
     // Spock framework
     testCompile 'org.codehaus.groovy:groovy-all:2.4.5'
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
