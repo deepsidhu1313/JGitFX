@@ -7,6 +7,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.lib.PersonIdent;
 
 import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
 import static javafx.scene.control.ButtonType.CANCEL;
@@ -44,7 +45,18 @@ public class CommitDialogPane extends DialogPane {
     }
 
     public final CommitModel getModel() {
+        return new CommitModel(fileViewer.getSelectedFiles(), getCommitMessage(), getAuthor(), getCommitter());
+    }
+
+    public final String getCommitMessage() {
+        return messageArea.getText();
+    }
+
+    public final PersonIdent getAuthor() {
         return null;
     }
 
+    public final PersonIdent getCommitter() {
+        return null;
+    }
 }
