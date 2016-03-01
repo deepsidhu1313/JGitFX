@@ -99,6 +99,31 @@ class GitActionsSpec extends Specification {
         branchList[0].name.endsWith("master") // name == "refs/heads/master"
     }
 
+    def "Attempt to create a new branch will now succeed"() {
+        when: "try to create a new branch called 'secondBranch'"
+        git.branchCreate().setName("secondBranch").call()
+
+        then: "that branch now exists"
+        git.branchList().call().any { it.name.endsWith("secondBranch") }
+
+        when: "try to create a new branch called 'thirdBranch' using checkout method"
+        git.branchCreate().setName("thirdBranch").call()
+
+        then: "that branch now exists"
+        git.branchList().call().any { it.name.endsWith("secondBranch") }
+    }
+
+    def "Delete previous method's branches and re-checkout 'master'"() {
+        setup: "delete previous branches"
+        git.branchDelete().setBranchNames("secondBranch", "thirdBranch").call()
+
+        expect: "only one branch to be listed"
+        git.branchList().call().size() == 1
+
+        cleanup: "checkout master"
+        git.checkout().setName("master").call()
+    }
+
     def cleanupSpec() {
         // clean up memory
         git.close()
