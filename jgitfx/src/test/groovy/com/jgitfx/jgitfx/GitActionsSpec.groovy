@@ -91,12 +91,8 @@ class GitActionsSpec extends Specification {
         !status.hasUncommittedChanges()
         status.added.isEmpty()
 
-        when: "branch list is requested"
-        List<Ref> branchList = git.branchList().call()
-
-        then: "a 'master' branch has been created indirectly"
-        branchList.size() == 1
-        branchList[0].name.endsWith("master") // name == "refs/heads/master"
+        and: "a 'master' branch has been created indirectly"
+        git.repository.findRef("master") != null
     }
 
     def "Attempt to create a new branch will now succeed"() {
@@ -104,13 +100,13 @@ class GitActionsSpec extends Specification {
         git.branchCreate().setName("secondBranch").call()
 
         then: "that branch now exists"
-        git.branchList().call().any { it.name.endsWith("secondBranch") }
+        git.repository.findRef("secondBranch") != null
 
         when: "try to create a new branch called 'thirdBranch' using checkout method"
         git.branchCreate().setName("thirdBranch").call()
 
         then: "that branch now exists"
-        git.branchList().call().any { it.name.endsWith("secondBranch") }
+        git.repository.findRef("thirdBranch") != null
     }
 
     def "Delete previous method's branches and re-checkout 'master'"() {
