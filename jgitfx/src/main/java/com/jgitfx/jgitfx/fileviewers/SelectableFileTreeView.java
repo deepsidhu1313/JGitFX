@@ -5,7 +5,6 @@ import com.jgitfx.jgitfx.ModifiedPath;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.CheckBoxTreeItem;
@@ -50,9 +49,7 @@ public class SelectableFileTreeView extends Region {
 
     private final BooleanBinding hasSelectedFiles;
     public final boolean hasSelectedFiles() { return hasSelectedFiles.get(); }
-    public final ObservableBooleanValue hasSelectedFilesProperty() {
-        return hasSelectedFiles;
-    }
+    public final BooleanBinding hasSelectedFilesProperty() { return hasSelectedFiles; }
 
     /**
      * @return the list of files that were selected.
