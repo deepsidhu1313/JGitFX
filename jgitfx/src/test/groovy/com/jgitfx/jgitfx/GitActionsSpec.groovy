@@ -5,6 +5,7 @@ import org.eclipse.jgit.api.Status
 import org.eclipse.jgit.api.errors.RefNotFoundException
 import org.eclipse.jgit.lib.PersonIdent
 import org.eclipse.jgit.lib.Ref
+import org.eclipse.jgit.revwalk.RevCommit
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -13,19 +14,19 @@ import spock.lang.Stepwise
 class GitActionsSpec extends Specification {
 
     @Shared
-    File rootDir
+    File rootDir    // the directory that stores the Git meta-directory and all tracked files/directories
 
     @Shared
-    File file
+    File file       // the main file used to test how to make changes, merges, etc.
 
     @Shared
-    String relativePath
+    String relativePath // the relative path of file from rootDir to file
 
     @Shared
-    Git git
+    Git git         // Allow high porcelain git commands
 
     @Shared
-    PersonIdent fakeAuthor
+    PersonIdent fakeAuthor  // temporary author to use until figure out how to get authors/committers
 
     def setupSpec() {
         rootDir = new File(System.getProperty("user.home"), "TestRepoDir")
@@ -81,7 +82,7 @@ class GitActionsSpec extends Specification {
         when: "file is committed"
         git.commit()
                 .setAuthor(fakeAuthor)
-                .setMessage("initial commit: add main file to repository")
+                .setMessage("initial commit" + "\n\n" + "Added main file to repository")
                 .call()
 
         and: "status is requested"
@@ -118,6 +119,47 @@ class GitActionsSpec extends Specification {
 
         cleanup: "checkout master"
         git.checkout().setName("master").call()
+    }
+
+    def "Look at the log of a repository"() {
+        setup: "Clear the file's text"
+        file.text = ""
+
+        and: "do 5 commits, each of which adds 'Line: #' to file's text"
+        5.times { idx ->
+            file.text += "Line: $idx"
+            assert git.status().call().hasUncommittedChanges()
+            // no need to add the file since it's already tracked and added by default
+            // git.add().addFilepattern(relativePath).call()
+            git.commit()
+                    .setAuthor(fakeAuthor)
+                    .setMessage("Adding line $idx" + "\n\n" + "Appended a line to the file")
+                    .call()
+        }
+
+        when: "log all the commits"
+        Iterable<RevCommit> logList = git.log().all().call()
+
+        then: "print out those commits"
+        println "\n\nPrinting the log list\n"
+        logList.each {
+            it.with {
+                println "Name is: $name"
+                println "Commit time is: ${new Date(commitTime).toString()}"
+                println "Author is [${authorIdent.toString()}]"
+                println "First line is [$shortMessage]"
+                println "Full message is [$fullMessage]"
+                println "Tree is:"
+                println "\tName - ${tree.name}"
+                println "\tObjectID name - ${tree.getId().name}"
+                println "Number of parents: $parentCount"
+                parents.eachWithIndex { parent, idx ->
+                    println "Parent #$idx: ${parent.name}"
+                }
+                println "============"
+            }
+        }
+        println "\nFinished printing log list"
     }
 
     def cleanupSpec() {
