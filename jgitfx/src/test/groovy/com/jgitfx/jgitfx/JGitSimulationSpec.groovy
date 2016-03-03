@@ -6,12 +6,28 @@ import org.eclipse.jgit.api.errors.RefNotFoundException
 import org.eclipse.jgit.lib.PersonIdent
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
+import spock.lang.Narrative
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
+import spock.lang.Title
 
+@Narrative("""
+JGitSimulationSpec uses Spock Tests to demonstrate how to use JGit correctly in a stream-lined fashion.
+Rather than asking, "How do I do [some Git command/action]?" I'm asking, "How do I simulate
+a real-world user experience of using JGit?" For example, a user might do the following:
+Create a repository, make some commit, make changes to the file,
+make more commits, call the 'log' command to see past revisions,
+change the file, stash the changes and check out some other commit and reapply the stash, etc.
+
+@Stepwise is used to insure that methods are executed in order. Thus, by reading through this
+Spock test (and in my case, designing it), one can come to understand how to use JGit's
+high porcelain commands and know how to get the mid-level arguments needed for some of its methods
+(e.g. RevCommit, Ref, etc.)
+""")
+@Title("Spec for demonstrating JGit in simulated real-world user experience")
 @Stepwise
-class GitActionsSpec extends Specification {
+class JGitSimulationSpec extends Specification {
 
     @Shared
     File rootDir    // the directory that stores the Git meta-directory and all tracked files/directories
@@ -20,7 +36,7 @@ class GitActionsSpec extends Specification {
     File file       // the main file used to test how to make changes, merges, etc.
 
     @Shared
-    String relativePath // the relative path of file from rootDir to file
+    String relativePath // the relative path of file from rootDir to file: "file.txt"
 
     @Shared
     Git git         // Allow high porcelain git commands
