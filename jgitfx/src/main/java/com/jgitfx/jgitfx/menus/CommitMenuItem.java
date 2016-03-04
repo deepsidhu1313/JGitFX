@@ -12,8 +12,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.reactfx.value.Val;
 
-import java.util.function.Consumer;
-
 /**
  * A {@link MenuItem} that displays a {@link CommitDialog} if there are changes or an information {@link Alert} that
  * notifies user that there are no changes to commit.
@@ -21,14 +19,11 @@ import java.util.function.Consumer;
 public class CommitMenuItem extends MenuItem {
 
     private final Val<Git> git;
-    public final Git getGit() { return git.getValue(); }
+    public final Git getGit() { return git.getOrThrow(); }
 
-    Consumer<RevCommit> revCommitConsumer;
-
-    public CommitMenuItem(Val<Git> git, Consumer<RevCommit> commitConsumer) {
+    public CommitMenuItem(Val<Git> git) {
         super("Commit...");
         this.git = git;
-        revCommitConsumer = commitConsumer;
         setOnAction(ae -> {
             try {
                 Status status = getGit().status().call();
@@ -48,7 +43,6 @@ public class CommitMenuItem extends MenuItem {
                             commitModel.ifCommitMessageIsPresent(commit::setMessage);
                             RevCommit revCommit = commit.call();
 
-                            revCommitConsumer.accept(revCommit);
                         } catch (GitAPIException e) {
                             e.printStackTrace();
                         }
