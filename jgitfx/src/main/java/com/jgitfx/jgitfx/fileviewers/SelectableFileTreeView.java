@@ -44,6 +44,23 @@ public class SelectableFileTreeView extends Region {
     private List<ModifiedPath> keys;
     private List<BooleanProperty> values;
 
+    /* *************** *
+     * Constructor     *
+     * *************** */
+
+    public SelectableFileTreeView(Status status) {
+        super();
+        view.setShowRoot(false);
+        view.setCellFactory(GitFileStatusTreeCell.forTreeView());
+        getChildren().add(view);
+
+        refreshTree(status);
+    }
+
+    /* *************** *
+     * Public Methods  *
+     * *************** */
+
     public final boolean hasSelectedFiles() { return root.isIndeterminate() || root.isSelected(); }
     public final BooleanBinding hasSelectedFilesProperty() {
         return root.indeterminateProperty().or(root.selectedProperty());
@@ -68,23 +85,6 @@ public class SelectableFileTreeView extends Region {
         return selectedFiles;
     }
 
-    /* *************** *
-     * Constructor     *
-     * *************** */
-
-    public SelectableFileTreeView(Status status) {
-        super();
-        view.setShowRoot(false);
-        view.setCellFactory(GitFileStatusTreeCell.forTreeView());
-        getChildren().add(view);
-
-        refreshTree(status);
-    }
-
-    /* *************** *
-     * Private Methods *
-     * *************** */
-
     public void refreshTree(Status status) {
         int totalSize = status.getAdded().size() + status.getChanged().size() + status.getMissing().size();
 
@@ -99,6 +99,10 @@ public class SelectableFileTreeView extends Region {
 
         buildRoot();
     }
+
+    /* *************** *
+     * Private Methods *
+     * *************** */
 
     private void buildRoot() {
         root.getChildren().clear();
@@ -116,6 +120,7 @@ public class SelectableFileTreeView extends Region {
     }
 
 
+    // TODO Refactor this method into smaller methods
     /**
      * Builds a Tree of {@link CheckBoxTreeItem}s and consolidates any shared directories into one item.
      *
