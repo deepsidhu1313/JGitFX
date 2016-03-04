@@ -1,13 +1,17 @@
 package com.jgitfx.jgitfx.dialogs;
 
 import com.jgitfx.jgitfx.fileviewers.SelectableFileTreeView;
+import javafx.scene.Node;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.reactfx.value.Var;
 
 import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
 import static javafx.scene.control.ButtonType.CANCEL;
@@ -17,7 +21,9 @@ import static javafx.scene.control.ButtonType.CANCEL;
  */
 public class CommitDialogPane extends DialogPane {
 
-    private final SelectableFileTreeView fileViewer;
+    private final Var<Git> git;
+
+    private SelectableFileTreeView fileViewer;
 
     /**
      * The {@link TextArea} used to type in the commit message
@@ -31,18 +37,37 @@ public class CommitDialogPane extends DialogPane {
     private final BorderPane root = new BorderPane();
     protected final BorderPane getBorderPane() { return root; }
 
-    CommitDialogPane(Status status) {
+    public CommitDialogPane(Var<Git> git, Status status) {
         super();
-        fileViewer = new SelectableFileTreeView(status);
-        root.setTop(fileViewer);
-        root.setCenter(new VBox(
+        this.git = git;
+
+        setContent(root);
+        root.setBottom(new VBox(
                 new Label("Commit Message:"),
                 messageArea
         ));
-        setContent(root);
 
         getButtonTypes().addAll(COMMIT, CANCEL);
-        lookupButton(COMMIT).disableProperty().bind(fileViewer.hasSelectedFilesProperty().not());
+        refreshTree(status);
+    }
+
+    private void refreshTree(Status status) {
+        fileViewer = new SelectableFileTreeView(status);
+        root.setCenter(fileViewer);
+
+        Node commitButton = lookupButton(COMMIT);
+        if (commitButton.disableProperty().isBound()) {
+            commitButton.disableProperty().unbind();
+        }
+        commitButton.disableProperty().bind(fileViewer.hasSelectedFilesProperty().not());
+    }
+
+    public final void refreshTree() {
+        try {
+            refreshTree(git.getValue().status().call());
+        } catch (GitAPIException e) {
+            e.printStackTrace();
+        }
     }
 
     public final CommitModel getModel() {

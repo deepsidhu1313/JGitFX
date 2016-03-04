@@ -1,7 +1,9 @@
 package com.jgitfx.jgitfx.dialogs;
 
 import javafx.scene.control.Dialog;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
+import org.reactfx.value.Var;
 
 import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
 
@@ -10,12 +12,12 @@ import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
  */
 public class CommitDialog extends Dialog<CommitModel> {
 
-    public CommitDialog(Status status) {
+    public CommitDialog(Var<Git> git, Status status) {
         super();
         setTitle("Commit changes");
         setResizable(true);
 
-        CommitDialogPane pane = new CommitDialogPane(status);
+        CommitDialogPane pane = new CommitDialogPane(git, status);
         setDialogPane(pane);
         setResultConverter(buttonType ->
                 buttonType.equals(COMMIT)
