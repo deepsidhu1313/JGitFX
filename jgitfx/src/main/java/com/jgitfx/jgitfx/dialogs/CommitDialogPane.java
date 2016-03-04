@@ -2,6 +2,7 @@ package com.jgitfx.jgitfx.dialogs;
 
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -30,6 +31,7 @@ public final class CommitDialogPane extends DialogPane {
     private final TextArea messageArea = new TextArea();
     private final BorderPane root = new BorderPane();
     private final SelectableFileViewer fileViewer;
+    private final CheckBox amendCommit = new CheckBox("Amend commit");
 
     public CommitDialogPane(Val<Git> git, Status status) {
         super();
@@ -50,6 +52,10 @@ public final class CommitDialogPane extends DialogPane {
                 new Label("Commit Message:"),
                 messageArea
         ));
+        root.setRight(new VBox(
+                amendCommit
+                // TODO: author content here
+        ));
     }
 
     private void refreshTree() {
@@ -68,6 +74,7 @@ public final class CommitDialogPane extends DialogPane {
 
             getGitOrThrow().commit()
                     .setAllowEmpty(false)
+                    .setAmend(amendCommit.isSelected())
                     .setMessage(messageArea.getText())
                     // .setAuthor(); // TODO implement author
                     .call();
