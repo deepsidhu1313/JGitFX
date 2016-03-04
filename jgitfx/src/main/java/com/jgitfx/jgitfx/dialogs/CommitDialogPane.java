@@ -19,23 +19,13 @@ import static javafx.scene.control.ButtonType.CANCEL;
 /**
  * The content of {@link CommitDialog}.
  */
-public class CommitDialogPane extends DialogPane {
+public final class CommitDialogPane extends DialogPane {
 
     private final Var<Git> git;
+    private final TextArea messageArea = new TextArea();
+    private final BorderPane root = new BorderPane();
 
     private SelectableFileTreeView fileViewer;
-
-    /**
-     * The {@link TextArea} used to type in the commit message
-     */
-    private final TextArea messageArea = new TextArea();
-    protected final TextArea getMessageArea() { return messageArea; }
-
-    /**
-     * The {@link BorderPane} used to better layout the pane's content
-     */
-    private final BorderPane root = new BorderPane();
-    protected final BorderPane getBorderPane() { return root; }
 
     public CommitDialogPane(Var<Git> git, Status status) {
         super();
@@ -51,17 +41,6 @@ public class CommitDialogPane extends DialogPane {
         refreshTree(status);
     }
 
-    private void refreshTree(Status status) {
-        fileViewer = new SelectableFileTreeView(status);
-        root.setCenter(fileViewer);
-
-        Node commitButton = lookupButton(COMMIT);
-        if (commitButton.disableProperty().isBound()) {
-            commitButton.disableProperty().unbind();
-        }
-        commitButton.disableProperty().bind(fileViewer.hasSelectedFilesProperty().not());
-    }
-
     public final void refreshTree() {
         try {
             refreshTree(git.getValue().status().call());
@@ -72,6 +51,17 @@ public class CommitDialogPane extends DialogPane {
 
     public final CommitModel getModel() {
         return new CommitModel(fileViewer.getSelectedFiles(), getCommitMessage(), getAuthor(), getCommitter());
+    }
+
+    private void refreshTree(Status status) {
+        fileViewer = new SelectableFileTreeView(status);
+        root.setCenter(fileViewer);
+
+        Node commitButton = lookupButton(COMMIT);
+        if (commitButton.disableProperty().isBound()) {
+            commitButton.disableProperty().unbind();
+        }
+        commitButton.disableProperty().bind(fileViewer.hasSelectedFilesProperty().not());
     }
 
     public final String getCommitMessage() {
