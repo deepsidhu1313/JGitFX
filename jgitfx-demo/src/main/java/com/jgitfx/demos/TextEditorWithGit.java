@@ -1,6 +1,5 @@
 package com.jgitfx.demos;
 
-import com.jgitfx.jgitfx.menus.AddFilesMenuItem;
 import com.jgitfx.jgitfx.menus.CommitMenuItem;
 import com.jgitfx.jgitfx.menus.CreateRepoMenuItem;
 import com.jgitfx.jgitfx.menus.OpenRepoMenuItem;
@@ -181,8 +180,7 @@ public class TextEditorWithGit extends Application {
                 this::setGit
         );
 
-        AddFilesMenuItem addFiles = new AddFilesMenuItem(git, selectedFiles);
-        CommitMenuItem commit = new CommitMenuItem(git, (revCommit -> System.out.println("Commited: " + revCommit)));
+        CommitMenuItem commit = new CommitMenuItem(git, (revCommit -> System.out.println("Committed: " + revCommit)));
         Menu gitMenu = new Menu("Git");
         gitMenu.getItems().addAll(
                 // Repository creation
@@ -191,7 +189,6 @@ public class TextEditorWithGit extends Application {
                 new SeparatorMenuItem(),
 
                 // basic commit
-                addFiles,
                 commit,
                 new SeparatorMenuItem(),
 
@@ -202,6 +199,7 @@ public class TextEditorWithGit extends Application {
                 new SeparatorMenuItem(),
 
                 // remote related
+                new MenuItem("Fetch"),
                 new MenuItem("Push"),
                 new MenuItem("Pull"),
                 new SeparatorMenuItem(),
