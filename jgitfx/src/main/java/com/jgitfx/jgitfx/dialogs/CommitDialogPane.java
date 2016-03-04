@@ -29,7 +29,6 @@ public final class CommitDialogPane extends DialogPane {
 
     private final TextArea messageArea = new TextArea();
     private final BorderPane root = new BorderPane();
-    private final Button commitButton;
 
     private SelectableFileTreeView fileViewer;
 
@@ -38,21 +37,25 @@ public final class CommitDialogPane extends DialogPane {
         this.git = git;
 
         getButtonTypes().addAll(COMMIT, CANCEL);
-        commitButton = (Button) lookupButton(COMMIT);
+        Button commitButton = (Button) lookupButton(COMMIT);
         commitButton.setOnAction(ae -> commitFiles());
+
+        fileViewer = new SelectableFileTreeView(status);
+        root.setCenter(fileViewer);
+
+        // commit button is disabled when file viewer has no selected files
+        commitButton.disableProperty().bind(fileViewer.hasSelectedFilesProperty().not());
 
         setContent(root);
         root.setBottom(new VBox(
                 new Label("Commit Message:"),
                 messageArea
         ));
-
-        refreshTree(status);
     }
 
-    public final void refreshTree() {
+    private void refreshTree() {
         try {
-            refreshTree(getGitOrThrow().status().call());
+            fileViewer.refreshTree(getGitOrThrow().status().call());
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
@@ -72,17 +75,6 @@ public final class CommitDialogPane extends DialogPane {
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
-    }
-
-    private void refreshTree(Status status) {
-        fileViewer = new SelectableFileTreeView(status);
-        root.setCenter(fileViewer);
-
-        if (commitButton.disableProperty().isBound()) {
-            commitButton.disableProperty().unbind();
-        }
-        // commit button is disabled when file viewer has no selected files
-        commitButton.disableProperty().bind(fileViewer.hasSelectedFilesProperty().not());
     }
 
 }

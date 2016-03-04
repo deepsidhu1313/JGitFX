@@ -2,11 +2,8 @@ package com.jgitfx.jgitfx.fileviewers;
 
 import com.jgitfx.jgitfx.GitFileStatus;
 import com.jgitfx.jgitfx.ModifiedPath;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Region;
@@ -42,14 +39,15 @@ public class SelectableFileTreeView extends Region {
     private final TreeView<ModifiedPath> view = new TreeView<>();
     private final CheckBoxTreeItem<ModifiedPath> root = new CheckBoxTreeItem<>();
 
-    private final List<ModifiedPath> changedFiles;
+    private List<ModifiedPath> changedFiles;
 
-    private final ObservableList<ModifiedPath> keys;
-    private final ObservableList<BooleanProperty> values;
+    private List<ModifiedPath> keys;
+    private List<BooleanProperty> values;
 
-    private final BooleanBinding hasSelectedFiles;
-    public final boolean hasSelectedFiles() { return hasSelectedFiles.get(); }
-    public final BooleanBinding hasSelectedFilesProperty() { return hasSelectedFiles; }
+    public final boolean hasSelectedFiles() { return root.isIndeterminate() || root.isSelected(); }
+    public final BooleanBinding hasSelectedFilesProperty() {
+        return root.indeterminateProperty().or(root.selectedProperty());
+    }
 
     /**
      * @return the list of files that were selected.
@@ -80,6 +78,14 @@ public class SelectableFileTreeView extends Region {
         view.setCellFactory(GitFileStatusTreeCell.forTreeView());
         getChildren().add(view);
 
+        refreshTree(status);
+    }
+
+    /* *************** *
+     * Private Methods *
+     * *************** */
+
+    public void refreshTree(Status status) {
         int totalSize = status.getAdded().size() + status.getChanged().size() + status.getMissing().size();
 
         changedFiles = new ArrayList<>(totalSize);
@@ -88,21 +94,15 @@ public class SelectableFileTreeView extends Region {
         status.getChanged().forEach(file -> changedFiles.add(new ModifiedPath(Paths.get(file), GitFileStatus.MODIFIED)));
         status.getMissing().forEach(file -> changedFiles.add(new ModifiedPath(Paths.get(file), GitFileStatus.REMOVED)));
 
-        keys = FXCollections.observableList(new ArrayList<>(totalSize));
-        values = FXCollections.observableList(new ArrayList<>(totalSize));
+        keys = new ArrayList<>(totalSize);
+        values = new ArrayList<>(totalSize);
 
         buildRoot();
-
-        hasSelectedFiles = Bindings.createBooleanBinding(
-                () -> values.stream().anyMatch(BooleanProperty::get),
-                FXCollections.unmodifiableObservableList(values));
     }
 
-    /* *************** *
-     * Private Methods *
-     * *************** */
-
     private void buildRoot() {
+        root.getChildren().clear();
+
         for (ModifiedPath firstLevelPath : getNamesAtIndex(0)) {
             CheckBoxTreeItem<ModifiedPath> firstLevelItem = new CheckBoxTreeItem<>(firstLevelPath);
             if (changedFiles.contains(firstLevelPath)) {
@@ -192,7 +192,7 @@ public class SelectableFileTreeView extends Region {
 
     private void addEntry(ModifiedPath key, BooleanProperty value) {
         keys.add(key);
-        values.addAll(value);
+        values.add(value);
     }
 
 }
