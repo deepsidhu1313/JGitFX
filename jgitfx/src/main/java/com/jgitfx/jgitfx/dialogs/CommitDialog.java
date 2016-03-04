@@ -5,23 +5,16 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.reactfx.value.Val;
 
-import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
-
 /**
  * A dialog for marking which files to add (stage) and what the commit message is before committing them.
  */
-public class CommitDialog extends Dialog<CommitModel> {
+public class CommitDialog extends Dialog<Void> {
 
     public CommitDialog(Val<Git> git, Status status) {
         super();
         setTitle("Commit changes");
         setResizable(true);
 
-        CommitDialogPane pane = new CommitDialogPane(git, status);
-        setDialogPane(pane);
-        setResultConverter(buttonType ->
-                buttonType.equals(COMMIT)
-                        ? pane.getModel()
-                        : null);
+        setDialogPane(new CommitDialogPane(git, status));
     }
 }

@@ -1,16 +1,16 @@
 package com.jgitfx.jgitfx.dialogs;
 
 import com.jgitfx.jgitfx.fileviewers.SelectableFileTreeView;
-import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.PersonIdent;
 import org.reactfx.value.Val;
 
 import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
@@ -18,12 +18,18 @@ import static javafx.scene.control.ButtonType.CANCEL;
 
 /**
  * The content of {@link CommitDialog}.
+ *
+ * <p>Note: this DialogPane executes the code that commits the selected files. {@link CommitDialog} does not
+ * handle this code.</p>
  */
 public final class CommitDialogPane extends DialogPane {
 
     private final Val<Git> git;
+    private Git getGitOrThrow() { return git.getOrThrow(); }
+
     private final TextArea messageArea = new TextArea();
     private final BorderPane root = new BorderPane();
+    private final Button commitButton;
 
     private SelectableFileTreeView fileViewer;
 
@@ -31,48 +37,52 @@ public final class CommitDialogPane extends DialogPane {
         super();
         this.git = git;
 
+        getButtonTypes().addAll(COMMIT, CANCEL);
+        commitButton = (Button) lookupButton(COMMIT);
+        commitButton.setOnAction(ae -> commitFiles());
+
         setContent(root);
         root.setBottom(new VBox(
                 new Label("Commit Message:"),
                 messageArea
         ));
 
-        getButtonTypes().addAll(COMMIT, CANCEL);
         refreshTree(status);
     }
 
     public final void refreshTree() {
         try {
-            refreshTree(git.getOrThrow().status().call());
+            refreshTree(getGitOrThrow().status().call());
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
     }
 
-    public final CommitModel getModel() {
-        return new CommitModel(fileViewer.getSelectedFiles(), getCommitMessage(), getAuthor(), getCommitter());
+    private void commitFiles() {
+        try {
+            AddCommand add = getGitOrThrow().add();
+            fileViewer.getSelectedFiles().forEach(add::addFilepattern);
+            add.call();
+
+            getGitOrThrow().commit()
+                    .setAllowEmpty(false)
+                    .setMessage(messageArea.getText())
+                    // .setAuthor(); // TODO implement author
+                    .call();
+        } catch (GitAPIException e) {
+            e.printStackTrace();
+        }
     }
 
     private void refreshTree(Status status) {
         fileViewer = new SelectableFileTreeView(status);
         root.setCenter(fileViewer);
 
-        Node commitButton = lookupButton(COMMIT);
         if (commitButton.disableProperty().isBound()) {
             commitButton.disableProperty().unbind();
         }
+        // commit button is disabled when file viewer has no selected files
         commitButton.disableProperty().bind(fileViewer.hasSelectedFilesProperty().not());
     }
 
-    public final String getCommitMessage() {
-        return messageArea.getText();
-    }
-
-    public final PersonIdent getAuthor() {
-        return null;
-    }
-
-    public final PersonIdent getCommitter() {
-        return null;
-    }
 }

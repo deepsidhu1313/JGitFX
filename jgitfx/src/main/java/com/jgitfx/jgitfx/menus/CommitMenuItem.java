@@ -4,12 +4,9 @@ import com.jgitfx.jgitfx.dialogs.CommitDialog;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
-import org.eclipse.jgit.api.AddCommand;
-import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.reactfx.value.Val;
 
 /**
@@ -18,35 +15,13 @@ import org.reactfx.value.Val;
  */
 public class CommitMenuItem extends MenuItem {
 
-    private final Val<Git> git;
-    public final Git getGit() { return git.getOrThrow(); }
-
     public CommitMenuItem(Val<Git> git) {
         super("Commit...");
-        this.git = git;
         setOnAction(ae -> {
             try {
-                Status status = getGit().status().call();
+                Status status = git.getOrThrow().status().call();
                 if (status.hasUncommittedChanges()) {
-                    CommitDialog dialog = new CommitDialog(git, status);
-                    dialog.showAndWait().ifPresent(commitModel -> {
-                        try {
-                            // stage files that were selected
-                            AddCommand add = getGit().add();
-                            commitModel.getCommittedFiles().forEach(add::addFilepattern);
-                            add.call();
-
-                            // commit files
-                            CommitCommand commit = getGit().commit();
-                            commitModel.ifAuthorIsPresent(commit::setAuthor);
-                            commitModel.ifCommitterIsPresent(commit::setCommitter);
-                            commitModel.ifCommitMessageIsPresent(commit::setMessage);
-                            RevCommit revCommit = commit.call();
-
-                        } catch (GitAPIException e) {
-                            e.printStackTrace();
-                        }
-                    });
+                    new CommitDialog(git, status).showAndWait();
                 } else {
                     new Alert(Alert.AlertType.INFORMATION, "No changes have been registered", ButtonType.OK)
                         .showAndWait();
