@@ -1,6 +1,6 @@
 package com.jgitfx.jgitfx.dialogs;
 
-import com.jgitfx.jgitfx.fileviewers.SelectableFileTreeView;
+import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
@@ -30,7 +30,7 @@ public final class CommitDialogPane extends DialogPane {
     private final TextArea messageArea = new TextArea();
     private final BorderPane root = new BorderPane();
 
-    private SelectableFileTreeView fileViewer;
+    private SelectableFileViewer fileViewer;
 
     public CommitDialogPane(Val<Git> git, Status status) {
         super();
@@ -40,7 +40,7 @@ public final class CommitDialogPane extends DialogPane {
         Button commitButton = (Button) lookupButton(COMMIT);
         commitButton.setOnAction(ae -> commitFiles());
 
-        fileViewer = new SelectableFileTreeView(status);
+        fileViewer = new SelectableFileViewer(status);
         root.setCenter(fileViewer);
 
         // commit button is disabled when file viewer has no selected files

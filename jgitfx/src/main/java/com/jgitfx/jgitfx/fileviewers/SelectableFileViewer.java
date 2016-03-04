@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SelectableFileTreeView displays the files that have been added, removed, or changed since the previous commit and
+ * SelectableFileViewer displays the files that have been added, removed, or changed since the previous commit and
  * allows the user to select the files on which the user wants some action done.
  *
  * <p>Shared directories are consolidated into the same directory. For example, if there are two files that have been
@@ -34,13 +34,12 @@ import java.util.List;
  *     <li>When ready to apply some action on the selected files, get those files via {@link #getSelectedFiles()}</li>
  * </ul>
  */
-public class SelectableFileTreeView extends Region {
+public class SelectableFileViewer extends Region {
 
     private final TreeView<ModifiedPath> view = new TreeView<>();
     private final CheckBoxTreeItem<ModifiedPath> root = new CheckBoxTreeItem<>();
 
     private List<ModifiedPath> changedFiles;
-
     private List<ModifiedPath> keys;
     private List<BooleanProperty> values;
 
@@ -48,10 +47,13 @@ public class SelectableFileTreeView extends Region {
      * Constructor     *
      * *************** */
 
-    public SelectableFileTreeView(Status status) {
+    public SelectableFileViewer(Status status) {
         super();
+        view.getStyleClass().add("selectable-file-tree-view");
+        view.setRoot(root);
         view.setShowRoot(false);
         view.setCellFactory(GitFileStatusTreeCell.forTreeView());
+
         getChildren().add(view);
 
         refreshTree(status);

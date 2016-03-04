@@ -13,7 +13,7 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 /**
- * The CSS-styleable TreeCellFactory used in {@link SelectableFileTreeView}.
+ * The CSS-styleable TreeCellFactory used in {@link SelectableFileViewer}.
  *
  * <p>{@link com.jgitfx.jgitfx.GitFileStatus} is used to determine the state of a file. Thus, there are currently
  * four ways the text's color can be styled:</p>
