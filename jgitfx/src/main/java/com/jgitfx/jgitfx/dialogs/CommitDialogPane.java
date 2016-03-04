@@ -29,8 +29,7 @@ public final class CommitDialogPane extends DialogPane {
 
     private final TextArea messageArea = new TextArea();
     private final BorderPane root = new BorderPane();
-
-    private SelectableFileViewer fileViewer;
+    private final SelectableFileViewer fileViewer;
 
     public CommitDialogPane(Val<Git> git, Status status) {
         super();
