@@ -32,10 +32,14 @@ javadoc {
     // support for JavaFX properties
     options.addBooleanOption('javafx', true);
 
-    // resolve links to Java and JavaFX Javadocs
     options.links = [
+            // resolve links to Java and JavaFX Javadocs
             'http://docs.oracle.com/javase/8/docs/api/',
             'http://docs.oracle.com/javase/8/javafx/api/'
+
+            // TODO resolve links to JGit
+
+            // TODO resolve links to ReactFX
     ]
 }
 
