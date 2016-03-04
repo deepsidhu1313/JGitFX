@@ -161,7 +161,10 @@ class JGitSimulationSpec extends Specification {
         logList.each {
             it.with {
                 println "Name is: $name"
+
+                // bug: new Date(commitTime).toString() prints the epoch date, not the commit date
                 println "Commit time is: ${new Date(commitTime).toString()}"
+
                 println "Author is [${authorIdent.toString()}]"
                 println "First line is [$shortMessage]"
                 println "Full message is [$fullMessage]"
