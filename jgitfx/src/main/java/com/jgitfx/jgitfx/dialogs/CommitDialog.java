@@ -3,7 +3,7 @@ package com.jgitfx.jgitfx.dialogs;
 import javafx.scene.control.Dialog;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
-import org.reactfx.value.Var;
+import org.reactfx.value.Val;
 
 import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
 
@@ -12,7 +12,7 @@ import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
  */
 public class CommitDialog extends Dialog<CommitModel> {
 
-    public CommitDialog(Var<Git> git, Status status) {
+    public CommitDialog(Val<Git> git, Status status) {
         super();
         setTitle("Commit changes");
         setResizable(true);

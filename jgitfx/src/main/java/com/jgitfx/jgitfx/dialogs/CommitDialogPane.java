@@ -11,7 +11,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.reactfx.value.Var;
+import org.reactfx.value.Val;
 
 import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
 import static javafx.scene.control.ButtonType.CANCEL;
@@ -21,13 +21,13 @@ import static javafx.scene.control.ButtonType.CANCEL;
  */
 public final class CommitDialogPane extends DialogPane {
 
-    private final Var<Git> git;
+    private final Val<Git> git;
     private final TextArea messageArea = new TextArea();
     private final BorderPane root = new BorderPane();
 
     private SelectableFileTreeView fileViewer;
 
-    public CommitDialogPane(Var<Git> git, Status status) {
+    public CommitDialogPane(Val<Git> git, Status status) {
         super();
         this.git = git;
 
@@ -43,7 +43,7 @@ public final class CommitDialogPane extends DialogPane {
 
     public final void refreshTree() {
         try {
-            refreshTree(git.getValue().status().call());
+            refreshTree(git.getOrThrow().status().call());
         } catch (GitAPIException e) {
             e.printStackTrace();
         }

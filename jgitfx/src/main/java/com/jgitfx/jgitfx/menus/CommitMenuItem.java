@@ -33,7 +33,7 @@ public class CommitMenuItem extends MenuItem {
             try {
                 Status status = getGit().status().call();
                 if (status.hasUncommittedChanges()) {
-                    CommitDialog dialog = new CommitDialog(status);
+                    CommitDialog dialog = new CommitDialog(git, status);
                     dialog.showAndWait().ifPresent(commitModel -> {
                         try {
                             // stage files that were selected
