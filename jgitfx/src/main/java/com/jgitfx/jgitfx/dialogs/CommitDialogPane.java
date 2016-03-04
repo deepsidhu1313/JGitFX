@@ -42,12 +42,10 @@ public final class CommitDialogPane extends DialogPane {
         commitButton.setOnAction(ae -> commitFiles());
 
         fileViewer = new SelectableFileViewer(status);
-        root.setCenter(fileViewer);
-
         // commit button is disabled when file viewer has no selected files
         commitButton.disableProperty().bind(fileViewer.hasSelectedFilesProperty().not());
 
-        setContent(root);
+        root.setCenter(fileViewer);
         root.setBottom(new VBox(
                 new Label("Commit Message:"),
                 messageArea
@@ -56,6 +54,7 @@ public final class CommitDialogPane extends DialogPane {
                 amendCommit
                 // TODO: author content here
         ));
+        setContent(root);
     }
 
     private void refreshTree() {
