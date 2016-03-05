@@ -1,85 +1,60 @@
 package com.jgitfx.jgitfx.dialogs;
 
-import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
-import javafx.scene.control.Button;
+import javafx.geometry.Orientation;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.reactfx.value.Val;
 
-import static com.jgitfx.jgitfx.dialogs.GitButtonTypes.COMMIT;
-import static javafx.scene.control.ButtonType.CANCEL;
-
 /**
- * The content of {@link CommitDialog}.
- *
- * <p>Note: this DialogPane executes the code that commits the selected files. {@link CommitDialog} does not
- * handle this code.</p>
+ * A basic implementation of {@link CommitDialogPaneBase}.
  */
-public final class CommitDialogPane extends DialogPane {
+public class CommitDialogPane extends CommitDialogPaneBase {
 
-    private final Val<Git> git;
-    private Git getGitOrThrow() { return git.getOrThrow(); }
-
+    // GUI components
     private final TextArea messageArea = new TextArea();
-    private final BorderPane root = new BorderPane();
-    private final SelectableFileViewer fileViewer;
-    private final CheckBox amendCommit = new CheckBox("Amend commit");
+    @Override protected String getCommitMessage() { return messageArea.getText(); }
 
-    public CommitDialogPane(Val<Git> git, Status status) {
-        super();
-        this.git = git;
+    private final CheckBox amendCheckBox = new CheckBox("Amend commit");
+    @Override protected boolean isAmendCommit() { return amendCheckBox.isSelected(); }
 
-        getButtonTypes().addAll(COMMIT, CANCEL);
-        Button commitButton = (Button) lookupButton(COMMIT);
-        commitButton.setOnAction(ae -> commitFiles());
+    // Layout Handlers
+    private final BorderPane borderPane = new BorderPane();
+    protected final BorderPane getBorderPane() { return borderPane; }
 
-        fileViewer = new SelectableFileViewer(status);
-        // commit button is disabled when file viewer has no selected files
-        commitButton.disableProperty().bind(fileViewer.hasSelectedFilesProperty().not());
+    private final SplitPane splitter = new SplitPane();
+    protected final SplitPane getSplitter() { return splitter; }
 
-        root.setCenter(fileViewer);
-        root.setBottom(new VBox(
-                new Label("Commit Message:"),
-                messageArea
-        ));
-        root.setRight(new VBox(
-                amendCommit
+    public CommitDialogPane(Val<Git> git, Status status, ButtonBar.ButtonData commitButtonData) {
+        super(git, status, commitButtonData);
+
+        getButtonTypes().addAll(ButtonType.CANCEL);
+
+        splitter.setOrientation(Orientation.VERTICAL);
+        splitter.getItems().addAll(
+                // top
+                getFileViewer(),
+
+                // bottom
+                new VBox(
+                        new Label("Commit Message:"),
+                        messageArea
+                )
+        );
+
+        borderPane.setCenter(splitter);
+        borderPane.setRight(new VBox(
+                amendCheckBox
                 // TODO: author content here
         ));
-        setContent(root);
-    }
-
-    private void refreshTree() {
-        try {
-            fileViewer.refreshTree(getGitOrThrow().status().call());
-        } catch (GitAPIException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void commitFiles() {
-        try {
-            AddCommand add = getGitOrThrow().add();
-            fileViewer.getSelectedFiles().forEach(add::addFilepattern);
-            add.call();
-
-            getGitOrThrow().commit()
-                    .setAllowEmpty(false)
-                    .setAmend(amendCommit.isSelected())
-                    .setMessage(messageArea.getText())
-                    // .setAuthor(); // TODO implement author
-                    .call();
-        } catch (GitAPIException e) {
-            e.printStackTrace();
-        }
+        setContent(borderPane);
     }
 
 }
