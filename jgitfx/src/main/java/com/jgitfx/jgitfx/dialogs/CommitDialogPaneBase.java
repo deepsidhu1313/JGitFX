@@ -11,25 +11,23 @@ import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.dircache.DirCache;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.reactfx.value.Val;
 
 /**
  * A base class for designing {@code CommitDialogPane}s.
+ *
  * <p>All the code for committing the selected files is handled
  * in this class, but subclasses can customize the layout. When the user
- * clicks on the {@code Commit Button}, {@link #addAndCommitSelectedFiles()}
- * is called, which calls {@link #addFiles()}, then {@link #commitFiles()}.
- * Each of these </p>
- *
- * <p>Additionally, if one wants to modify the add call and commit call,
- * they can override {@link #addFiles()} and {@link #commitFiles()}.
+ * clicks on the {@code Commit Button}, the selected files are added (staged)
+ * before being committed. The defaults should suffice for most users needs,
+ * but a developer can configure the {@link AddCommand} and {@link CommitCommand}
+ * via {@link #configureAddCommand(AddCommand)} and
+ * {@link #configureCommitCommand(CommitCommand)}, respectively.</p>
  */
 public abstract class CommitDialogPaneBase extends DialogPane {
 
     private final Val<Git> git;
-    protected final Git getGitOrThrow() { return git.getOrThrow(); }
+    private Git getGitOrThrow() { return git.getOrThrow(); }
 
     private final SelectableFileViewer fileViewer;
     protected final SelectableFileViewer getFileViewer() { return fileViewer; }
@@ -60,58 +58,46 @@ public abstract class CommitDialogPaneBase extends DialogPane {
         commitButton.disableProperty().bind(Bindings.not(fileViewer.hasSelectedFilesProperty()));
     }
 
-    /**
-     * When a user clicks on the {@code Commit} button, this method will be called.
-     * It calls {@link #addFiles()} followed by {@link #commitFiles()}.
-     *
-     * @return the RevCommit returned from {@link CommitCommand#call()} or null if an exception occurs
-     */
-    protected final RevCommit addAndCommitSelectedFiles() {
-        addFiles();
-        return commitFiles();
-    }
-
-    /**
-     * Adds (stages) the selected files from {@link SelectableFileViewer#getSelectedFiles()}
-     *
-     * <p>Note: this method can be overridden in subclasses for customized options, but that
-     * shouldn't be necessary.</p>
-     *
-     * @return the DirCache that is returned from {@link AddCommand#call()} or null if an exception occurs
-     * @see {@link #addAndCommitSelectedFiles()}
-     */
-    protected DirCache addFiles() {
+    private void addAndCommitSelectedFiles() {
         try {
             AddCommand add = getGitOrThrow().add();
-            fileViewer.getSelectedFiles().forEach(add::addFilepattern);
-            return add.call();
+            configureAddCommand(add);
+            add.call();
+
+            CommitCommand commit = getGitOrThrow().commit();
+            configureCommitCommand(commit);
+            commit.call();
         } catch (GitAPIException e) {
             e.printStackTrace();
-            return null;
         }
     }
 
     /**
-     * Commits the selected files that were staged in {@link #addFiles()}.
-     *
-     * <p>Note: this method can be overridden in subclasses for customized options,
-     * but that shouldn't be necessary for most use-cases.</p>
-     *
-     * @return the RevCommit returned from {@link CommitCommand#call()}
-     * @see {@link #addAndCommitSelectedFiles()} or null if an exception occurs
+     * Method used to configure the {@link AddCommand} before it is called. Default
+     * configuration adds the selected files.
+     * @param addCmd the add command to configure
      */
-    protected RevCommit commitFiles() {
-        try {
-            return getGitOrThrow().commit()
-                    .setAllowEmpty(false)
-                    .setAmend(isAmendCommit())
-                    .setMessage(getCommitMessage())
-                    // .setAuthor(); // TODO implement author
-                    .call();
-        } catch (GitAPIException e) {
-            e.printStackTrace();
-            return null;
-        }
+    protected void configureAddCommand(AddCommand addCmd) {
+        fileViewer.getSelectedFiles().forEach(addCmd::addFilepattern);
+    }
+
+    /**
+     * Method used to configure the {@link CommitCommand} before it is called. Default
+     * configuration:
+     * <pre>
+     *     {@code
+     *      commitCmd.setAllowEmpty(false)
+     *               .setAmend(isAmendCommit())
+     *               .setMessage(getCommitMessage());
+     *     }
+     * </pre>
+     * @param commitCmd the commit command to configure
+     */
+    protected void configureCommitCommand(CommitCommand commitCmd) {
+        commitCmd.setAllowEmpty(false)
+                .setAmend(isAmendCommit())
+                .setMessage(getCommitMessage());
+                // .setAuthor(); // TODO implement author and update javadoc
     }
 
     /**
