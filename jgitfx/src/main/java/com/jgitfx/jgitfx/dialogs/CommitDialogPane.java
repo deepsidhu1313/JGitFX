@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.reactfx.value.Val;
 
 /**
@@ -24,6 +25,9 @@ public class CommitDialogPane extends CommitDialogPaneBase {
 
     private final CheckBox amendCheckBox = new CheckBox("Amend commit");
     @Override protected boolean isAmendCommit() { return amendCheckBox.isSelected(); }
+
+    // TODO: implement GUI component for author
+    @Override protected PersonIdent getAuthor() { return new PersonIdent("", ""); }
 
     // Layout Handlers
     private final BorderPane borderPane = new BorderPane();

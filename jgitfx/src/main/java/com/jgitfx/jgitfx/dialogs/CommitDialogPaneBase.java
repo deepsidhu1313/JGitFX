@@ -11,6 +11,7 @@ import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.reactfx.value.Val;
 
 /**
@@ -35,6 +36,8 @@ public abstract class CommitDialogPaneBase extends DialogPane {
     protected abstract String getCommitMessage();
 
     protected abstract boolean isAmendCommit();
+
+    protected abstract PersonIdent getAuthor();
 
     /**
      * Base constructor for a CommitDialogPane
@@ -88,7 +91,8 @@ public abstract class CommitDialogPaneBase extends DialogPane {
      *     {@code
      *      commitCmd.setAllowEmpty(false)
      *               .setAmend(isAmendCommit())
-     *               .setMessage(getCommitMessage());
+     *               .setMessage(getCommitMessage())
+     *               .setAuthor(getAuthor());
      *     }
      * </pre>
      * @param commitCmd the commit command to configure
@@ -96,8 +100,8 @@ public abstract class CommitDialogPaneBase extends DialogPane {
     protected void configureCommitCommand(CommitCommand commitCmd) {
         commitCmd.setAllowEmpty(false)
                 .setAmend(isAmendCommit())
-                .setMessage(getCommitMessage());
-                // .setAuthor(); // TODO implement author and update javadoc
+                .setMessage(getCommitMessage())
+                .setAuthor(getAuthor());
     }
 
     /**
