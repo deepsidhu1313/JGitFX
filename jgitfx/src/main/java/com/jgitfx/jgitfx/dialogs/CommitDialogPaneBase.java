@@ -12,6 +12,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.reactfx.value.Val;
 
 /**
@@ -39,6 +40,11 @@ public abstract class CommitDialogPaneBase extends DialogPane {
 
     protected abstract PersonIdent getAuthor();
 
+    private final ButtonType commitButtonType;
+    public final ButtonType getCommitButtonType() { return commitButtonType; }
+
+    private CommitResult result;
+
     /**
      * Base constructor for a CommitDialogPane
      *
@@ -51,7 +57,7 @@ public abstract class CommitDialogPaneBase extends DialogPane {
         this.git = git;
         this.fileViewer = new SelectableFileViewer(status);
 
-        ButtonType commitButtonType = new ButtonType("Commit", commitButtonData);
+        commitButtonType = new ButtonType("Commit", commitButtonData);
         getButtonTypes().add(commitButtonType);
 
         Button commitButton = (Button) lookupButton(commitButtonType);
@@ -59,6 +65,17 @@ public abstract class CommitDialogPaneBase extends DialogPane {
 
         // commit button is disabled when there are no selected files
         commitButton.disableProperty().bind(Bindings.not(fileViewer.hasSelectedFilesProperty()));
+    }
+
+    /**
+     * Note: the {@link CommitResult}'s list of affected files assumes that the files added all
+     * came from {@link SelectableFileViewer#getSelectedFiles()}. If a developer deviates from this,
+     * ths affected files will not be correct.
+     *
+     * @return the result of the commit
+     */
+    public final CommitResult getCommitResult() {
+        return result;
     }
 
     private void addAndCommitSelectedFiles() {
@@ -69,7 +86,9 @@ public abstract class CommitDialogPaneBase extends DialogPane {
 
             CommitCommand commit = getGitOrThrow().commit();
             configureCommitCommand(commit);
-            commit.call();
+            RevCommit revCommit = commit.call();
+
+            result = new CommitResult(fileViewer.getSelectedFiles(), revCommit);
         } catch (GitAPIException e) {
             e.printStackTrace();
         }

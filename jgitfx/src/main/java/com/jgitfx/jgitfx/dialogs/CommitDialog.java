@@ -1,20 +1,22 @@
 package com.jgitfx.jgitfx.dialogs;
 
 import javafx.scene.control.Dialog;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.Status;
-import org.reactfx.value.Val;
 
 /**
  * A dialog for marking which files to add (stage) and what the commit message is before committing them.
  */
-public class CommitDialog extends Dialog<Void> {
+public class CommitDialog extends Dialog<CommitResult> {
 
-    public CommitDialog(Val<Git> git, Status status) {
+    public CommitDialog(CommitDialogPaneBase commitDialogPane) {
         super();
         setTitle("Commit changes");
         setResizable(true);
 
-        setDialogPane(new CommitDialogPane(git, status));
+        setDialogPane(commitDialogPane);
+        setResultConverter(buttonType ->
+                buttonType.equals(commitDialogPane.getCommitButtonType())
+                        ? commitDialogPane.getCommitResult()
+                        : null
+        );
     }
 }
