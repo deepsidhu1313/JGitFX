@@ -16,9 +16,9 @@ import spock.lang.Title
 JGitSimulationSpec uses Spock Tests to demonstrate how to use JGit correctly in a stream-lined fashion.
 Rather than asking, "How do I do [some Git command/action]?" I'm asking, "How do I simulate
 a real-world user experience of using JGit?" For example, a user might do the following:
-Create a repository, make some commit, make changes to the file,
+Create a repository, make some commit, make changes to the file(s),
 make more commits, call the 'log' command to see past revisions,
-change the file, stash the changes and check out some other commit and reapply the stash, etc.
+change the file(s), stash the changes and check out some other commit and reapply the stash, etc.
 
 @Stepwise is used to insure that methods are executed in order. Thus, by reading through this
 Spock test (and in my case, designing it), one can come to understand how to use JGit's
@@ -33,10 +33,10 @@ class JGitSimulationSpec extends Specification {
     File rootDir    // the directory that stores the Git meta-directory and all tracked files/directories
 
     @Shared
-    File file       // the main file used to test how to make changes, merges, etc.
+    File file1       // A file used to test how to make changes, merges, etc.
 
     @Shared
-    String relativePath // the relative path of file from rootDir to file: "file.txt"
+    File file2       // A file used to test how to make changes, merges, etc.
 
     @Shared
     Git git         // Allow high porcelain git commands
@@ -48,15 +48,24 @@ class JGitSimulationSpec extends Specification {
         rootDir = new File(System.getProperty("user.home"), "TestRepoDir")
         rootDir.mkdir()
 
-        file = new File(rootDir, "file.txt")
-        file.createNewFile()
+        file1 = new File(rootDir, "file1.txt")
+        file1.createNewFile()
 
-        // get relative file path
-        String relative = file.path - file.parent
+        file2 = new File(rootDir, "file2.txt")
+        file2.createNewFile()
 
-        // still need to remove the file separator
-        // "/file.txt" --> "file.txt"
-        relativePath = relative.substring(1)
+        // Rather than using @Shared Strings to store the relative path of a file,
+        //  just add a method that returns the correct String
+
+        // "path/to/user/home/file#.txt" (absolute Path) --> "file#.txt" (relative path)
+        File.metaClass.getRelativePath = {
+            // get relative path
+            String relative = delegate.path - delegate.parent
+
+            // still need to remove the file1 separator
+            // "/file#.txt" --> "file#.txt"
+            return relative.substring(1)
+        }
 
         fakeAuthor = new PersonIdent("author", "address@domain.com")
 
@@ -79,26 +88,29 @@ class JGitSimulationSpec extends Specification {
     }
 
     def "Making initial commit will indirectly create a 'master' branch"() {
-        setup: "when status is called when directory has a new file and repo has no commits"
+        setup: "when status is called when directory has a new file1 and repo has no commits"
         Status status = git.status().call()
 
-        expect: "file is listed as 'untracked'"
-        status.untracked[0] == relativePath
+        expect: "file1 is listed as 'untracked'"
+        status.untracked[0] == file1.getRelativePath()
+        status.untracked[1] == file2.getRelativePath()
 
-        when: "file is added"
-        git.add().addFilepattern(relativePath).call()
+        when: "file1 is added"
+        git.add()
+                .addFilepattern(file1.getRelativePath())
+                .addFilepattern(file2.getRelativePath()).call()
 
         and: "status is requested"
         status = git.status().call()
 
-        then: "file is listed as 'new'"
-        status.untracked.isEmpty()
-        status.added[0] == relativePath
+        then: "file1 is listed as 'new'"
+        status.added[0] == file1.getRelativePath()
+        status.added[1] == file2.getRelativePath()
 
-        when: "file is committed"
+        when: "file1 is committed"
         git.commit()
                 .setAuthor(fakeAuthor)
-                .setMessage("initial commit" + "\n\n" + "Added main file to repository")
+                .setMessage("initial commit" + "\n\n" + "Added files to repository")
                 .call()
 
         and: "status is requested"
@@ -137,19 +149,46 @@ class JGitSimulationSpec extends Specification {
         git.checkout().setName("master").call()
     }
 
-    def "Look at the log of a repository"() {
-        setup: "Clear the file's text"
-        file.text = ""
+    def "Make changes to both files but only commit one of the files (selective commit)"() {
+        setup: "get the number of commits files have had on them"
+        int firstCount_File1 = git.log().addPath(file1.getRelativePath()).call().size()
+        int firstCount_File2 = git.log().addPath(file2.getRelativePath()).call().size()
 
-        and: "do 5 commits, each of which adds 'Line: #' to file's text"
+        and: "change both files"
+        file1.text = "a new change!"
+        file2.text = "this guy's new"
+
+        expect: "status to list both files as modified"
+        git.status().call().modified.size() == 2
+
+        when: "add and commit file 2"
+        git.add().addFilepattern(file2.getRelativePath()).call()
+        git.commit().setMessage("only committing file 2").setAuthor(fakeAuthor).call()
+
+        and: "get the number of commits files have had on them again"
+        int secondCount_File1 = git.log().addPath(file1.getRelativePath()).call().size()
+        int secondCount_File2 = git.log().addPath(file2.getRelativePath()).call().size()
+
+        then: "file 1's second count should be the same as original"
+        secondCount_File1 == firstCount_File1
+
+        and: "file 2's second count has one more commit than its original"
+        secondCount_File2 == firstCount_File2 + 1
+    }
+
+    def "Look at the log of a repository"() {
+        setup: "Clear file1's text"
+        file1.text = ""
+
+        and: "do 5 commits, each of which adds 'Line: #' to file1's text"
         5.times { idx ->
-            file.text += "Line: $idx"
+            file1.text += "Line: $idx"
             assert git.status().call().hasUncommittedChanges()
-            // no need to add the file since it's already tracked and added by default
-            // git.add().addFilepattern(relativePath).call()
+            // no need to add the file1 since it's already tracked and added by default
+            // git.add().addFilepattern(file1.getRelativePath()).call()
             git.commit()
                     .setAuthor(fakeAuthor)
-                    .setMessage("Adding line $idx" + "\n\n" + "Appended a line to the file")
+                    .setMessage("Adding line $idx" + "\n\n" + "Appended a line to the file1")
                     .call()
         }
 
@@ -158,8 +197,8 @@ class JGitSimulationSpec extends Specification {
 
         then: "print out those commits"
         println "\n\nPrinting the log list\n"
-        logList.each {
-            it.with {
+        logList.each { RevCommit revCommit ->
+            revCommit.with {
                 println "Name is: $name"
 
                 // bug: new Date(commitTime).toString() prints the epoch date, not the commit date
