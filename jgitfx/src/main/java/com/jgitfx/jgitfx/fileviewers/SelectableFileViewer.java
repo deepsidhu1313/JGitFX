@@ -8,9 +8,12 @@ import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Region;
 import org.eclipse.jgit.api.Status;
+import org.reactfx.util.Tuple2;
+import org.reactfx.util.Tuples;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,8 +43,7 @@ public class SelectableFileViewer extends Region {
     private final CheckBoxTreeItem<ModifiedPath> root = new CheckBoxTreeItem<>();
 
     private List<ModifiedPath> changedFiles;
-    private List<ModifiedPath> keys;
-    private List<BooleanProperty> values;
+    private List<Tuple2<ModifiedPath, BooleanProperty>> fileSelectionStates;
 
     /* *************** *
      * Constructor     *
@@ -72,19 +74,14 @@ public class SelectableFileViewer extends Region {
      * @return the list of files that were selected.
      */
     public final List<String> getSelectedFiles() {
-        // calculate correct size of list
-        int size = 0;
-        for (BooleanProperty prop : values) {
-            if (prop.get()) { size++; }
-        }
-        List<String> selectedFiles = new ArrayList<>(size);
-
-        // initialize with correct values
-        for (int i = 0; i < keys.size(); i++) {
-            if (values.get(i).get()) { selectedFiles.add(keys.get(i).getPath().toString()); }
-        }
-
-        return selectedFiles;
+        return Arrays.asList(
+                fileSelectionStates.stream()
+                // only get the paths that are checked
+                .filter(v -> v.get2().get())
+                // get the relative path as a String
+                .map(v -> v.get1().getPath().toString())
+                .toArray(String[]::new)
+        );
     }
 
     public void refreshTree(Status status) {
@@ -96,8 +93,7 @@ public class SelectableFileViewer extends Region {
         status.getChanged().forEach(file -> changedFiles.add(new ModifiedPath(Paths.get(file), GitFileStatus.MODIFIED)));
         status.getMissing().forEach(file -> changedFiles.add(new ModifiedPath(Paths.get(file), GitFileStatus.REMOVED)));
 
-        keys = new ArrayList<>(totalSize);
-        values = new ArrayList<>(totalSize);
+        fileSelectionStates = new ArrayList<>(totalSize);
 
         buildRoot();
     }
@@ -112,7 +108,7 @@ public class SelectableFileViewer extends Region {
         for (ModifiedPath firstLevelPath : getNamesAtIndex(0)) {
             CheckBoxTreeItem<ModifiedPath> firstLevelItem = new CheckBoxTreeItem<>(firstLevelPath);
             if (changedFiles.contains(firstLevelPath)) {
-                addEntry(firstLevelPath, firstLevelItem.selectedProperty());
+                fileSelectionStates.add(Tuples.t(firstLevelPath, firstLevelItem.selectedProperty()));
             } else {
                 buildTreeRecursively(firstLevelPath, firstLevelItem, 1);
             }
@@ -152,7 +148,7 @@ public class SelectableFileViewer extends Region {
                         parent.getChildren().add(child);
 
                         // add its selected property
-                        addEntry(currentPath, child.selectedProperty());
+                        fileSelectionStates.add(Tuples.t(currentPath, child.selectedProperty()));
                     } else {
                         // single directory as child, so consolidate the two values into one item
                         // and continue loop
@@ -170,7 +166,7 @@ public class SelectableFileViewer extends Region {
 
                         CheckBoxTreeItem<ModifiedPath> child = new CheckBoxTreeItem<>(path);
                         if (changedFiles.contains(extendedPath)) {
-                            addEntry(extendedPath, child.selectedProperty());
+                            fileSelectionStates.add(Tuples.t(extendedPath, child.selectedProperty()));
                         } else {
                             buildTreeRecursively(extendedPath, child, nameIndex + 1);
                         }
@@ -195,11 +191,6 @@ public class SelectableFileViewer extends Region {
                 .map(v -> v.getName(nameIndex))
                 .distinct()
                 .toArray(ModifiedPath[]::new);
-    }
-
-    private void addEntry(ModifiedPath key, BooleanProperty value) {
-        keys.add(key);
-        values.add(value);
     }
 
 }
