@@ -175,6 +175,20 @@ class JGitSimulationSpec extends Specification {
         secondCount_File2 == firstCount_File2 + 1
     }
 
+    def "Change File 2's content and then revert it to its original content without making a revert commit"() {
+        setup: "Store file 2's current text"
+        String beforeChange = file2.text
+
+        and: "Change the text in some way"
+        file2.text += "some other changes that we will soon remove"
+
+        when: "re-checkout file2 from HEAD"
+        git.checkout().setStartPoint("HEAD").addPath(file2.getRelativePath()).call()
+
+        then: "File 2's text matches the unmodified text"
+        file2.text == beforeChange
+    }
+
     def "Look at the log of a repository"() {
         setup: "Clear file1's text"
         file1.text = ""
