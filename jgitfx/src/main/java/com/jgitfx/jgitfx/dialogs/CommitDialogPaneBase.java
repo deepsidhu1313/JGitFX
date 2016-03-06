@@ -129,6 +129,7 @@ public abstract class CommitDialogPaneBase extends DialogPane {
      */
     protected final void refreshTree() {
         try {
+            // Bug: if changes are reverted, then file tree should display a note saying that
             fileViewer.refreshTree(getGitOrThrow().status().call());
         } catch (GitAPIException e) {
             e.printStackTrace();
