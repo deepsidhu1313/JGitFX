@@ -68,7 +68,7 @@ public class GitFileStatusTreeCell extends CheckBoxTreeCell<ModifiedPath> {
 
     public GitFileStatusTreeCell() {
         super(
-                treeItem -> ((CheckBoxTreeItem) treeItem).selectedProperty(),
+                treeItem -> ((CheckBoxTreeItem<ModifiedPath>) treeItem).selectedProperty(),
                 CONVERTER
         );
 
