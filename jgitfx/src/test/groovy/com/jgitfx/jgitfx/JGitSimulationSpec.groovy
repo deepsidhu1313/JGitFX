@@ -73,7 +73,7 @@ class JGitSimulationSpec extends Specification {
         git = Git.init().setDirectory(rootDir).call()
     }
 
-    def "new repository has no branches and attempting to create one fails"() {
+    def "Attempt to create a new branch in a repo without any commits fails"() {
         given: "branch list"
         List<Ref> branchList = git.branchList().call()
 
@@ -83,11 +83,11 @@ class JGitSimulationSpec extends Specification {
         when: "attempt to create a 'master' branch"
         git.branchCreate().setName("master").call()
 
-        then: "that throws a RefNotFoundException: Cannot resolve HEAD"
+        then: "that throws a [RefNotFoundException: Cannot resolve HEAD]"
         thrown(RefNotFoundException)
     }
 
-    def "Making initial commit will indirectly create a 'master' branch"() {
+    def "Making an initial commit will indirectly create a 'master' branch"() {
         setup: "when status is called when directory has a new file1 and repo has no commits"
         Status status = git.status().call()
 
@@ -98,7 +98,8 @@ class JGitSimulationSpec extends Specification {
         when: "file1 is added"
         git.add()
                 .addFilepattern(file1.getRelativePath())
-                .addFilepattern(file2.getRelativePath()).call()
+                .addFilepattern(file2.getRelativePath())
+                .call()
 
         and: "status is requested"
         status = git.status().call()
@@ -124,7 +125,7 @@ class JGitSimulationSpec extends Specification {
         git.repository.findRef("master") != null
     }
 
-    def "Attempt to create a new branch will now succeed"() {
+    def "Creating a new branch on a repo with an initial commit succeeds; delete work once finished"() {
         when: "try to create a new branch called 'secondBranch'"
         git.branchCreate().setName("secondBranch").call()
 
@@ -136,13 +137,11 @@ class JGitSimulationSpec extends Specification {
 
         then: "that branch now exists"
         git.repository.findRef("thirdBranch") != null
-    }
 
-    def "Delete previous method's branches and re-checkout 'master'"() {
-        setup: "delete previous branches"
+        when: "delete branches that were just made"
         git.branchDelete().setBranchNames("secondBranch", "thirdBranch").call()
 
-        expect: "only one branch to be listed"
+        then: "only one branch (master) should be listed"
         git.branchList().call().size() == 1
 
         cleanup: "checkout master"
