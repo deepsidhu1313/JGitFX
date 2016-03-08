@@ -1,4 +1,4 @@
-package com.jgitfx.jgitfx.dialogs;
+package com.jgitfx.jgitfx.fileviewers;
 
 import javafx.beans.value.ObservableBooleanValue;
 import org.eclipse.jgit.api.Status;

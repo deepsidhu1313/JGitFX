@@ -2,7 +2,6 @@ package com.jgitfx.jgitfx.fileviewers;
 
 import com.jgitfx.jgitfx.GitFileStatus;
 import com.jgitfx.jgitfx.ModifiedPath;
-import com.jgitfx.jgitfx.dialogs.FileSelecter;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.CheckBoxTreeItem;

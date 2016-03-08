@@ -1,5 +1,6 @@
 package com.jgitfx.jgitfx.dialogs;
 
+import com.jgitfx.jgitfx.fileviewers.FileSelecter;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
