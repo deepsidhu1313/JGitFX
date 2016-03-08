@@ -3,7 +3,6 @@ package com.jgitfx.jgitfx.dialogs;
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import org.eclipse.jgit.api.CheckoutCommand;
@@ -28,12 +27,12 @@ public class RevertChangesDialogPaneBase extends DialogPane {
     private final ButtonType revertButtonType;
     public final ButtonType getRevertButtonType() { return revertButtonType; }
 
-    public RevertChangesDialogPaneBase(Val<Git> git, Status status, ButtonBar.ButtonData revertButtonData) {
+    public RevertChangesDialogPaneBase(Val<Git> git, Status status, ButtonType revertButtonType) {
         super();
         this.git = git;
         this.fileViewer = new SelectableFileViewer(status);
 
-        revertButtonType = new ButtonType("Revert", revertButtonData);
+        this.revertButtonType = revertButtonType;
         getButtonTypes().add(revertButtonType);
 
         Button revertButton = (Button) lookupButton(revertButtonType);

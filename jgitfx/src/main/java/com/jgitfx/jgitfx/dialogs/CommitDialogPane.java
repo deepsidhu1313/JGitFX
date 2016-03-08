@@ -36,8 +36,8 @@ public class CommitDialogPane extends CommitDialogPaneBase {
     private final SplitPane splitter = new SplitPane();
     protected final SplitPane getSplitter() { return splitter; }
 
-    public CommitDialogPane(Val<Git> git, Status status, ButtonBar.ButtonData commitButtonData) {
-        super(git, status, commitButtonData);
+    public CommitDialogPane(Val<Git> git, Status status) {
+        super(git, status, new ButtonType("Commit", ButtonBar.ButtonData.YES));
 
         getButtonTypes().addAll(ButtonType.CANCEL);
 

@@ -3,7 +3,6 @@ package com.jgitfx.jgitfx.dialogs;
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import org.eclipse.jgit.api.AddCommand;
@@ -50,14 +49,13 @@ public abstract class CommitDialogPaneBase extends DialogPane {
      *
      * @param git the Git repository
      * @param status the initial status to use to initialize {@link SelectableFileViewer}
-     * @param commitButtonData determines where the {@code Commit Button} will appear in
-     *                         the ButtonBar if other Buttons are added.
+     * @param commitButtonType the type to use for the commit button
      */
-    public CommitDialogPaneBase(Val<Git> git, Status status, ButtonBar.ButtonData commitButtonData) {
+    public CommitDialogPaneBase(Val<Git> git, Status status, ButtonType commitButtonType) {
         this.git = git;
         this.fileViewer = new SelectableFileViewer(status);
 
-        commitButtonType = new ButtonType("Commit", commitButtonData);
+        this.commitButtonType = commitButtonType;
         getButtonTypes().add(commitButtonType);
 
         Button commitButton = (Button) lookupButton(commitButtonType);
