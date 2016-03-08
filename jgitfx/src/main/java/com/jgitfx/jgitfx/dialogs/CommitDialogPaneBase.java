@@ -53,6 +53,7 @@ public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extend
      * @param commitButtonType the type to use for the commit button
      */
     public CommitDialogPaneBase(Val<Git> git, F fileSelector, ButtonType commitButtonType) {
+        super();
         this.git = git;
         this.fileViewer = fileSelector;
 
