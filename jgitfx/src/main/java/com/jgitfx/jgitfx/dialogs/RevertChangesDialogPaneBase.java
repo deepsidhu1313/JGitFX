@@ -11,6 +11,8 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.reactfx.value.Val;
 
+import java.util.List;
+
 /**
  * Base class that handles JGit code for reverting (without making a new commit in the revert process)
  * tracked file(s) that were modified since the time of the most recent commit back
@@ -29,6 +31,9 @@ public abstract class RevertChangesDialogPaneBase<F extends Node & FileSelecter>
     private final ButtonType revertButtonType;
     public final ButtonType getRevertButtonType() { return revertButtonType; }
 
+    private RevertChangesResult result;
+    public final RevertChangesResult getRevertChangesResult() { return result; }
+
     public RevertChangesDialogPaneBase(Val<Git> git, F fileSelector, ButtonType revertButtonType) {
         super();
         this.git = git;
@@ -46,7 +51,9 @@ public abstract class RevertChangesDialogPaneBase<F extends Node & FileSelecter>
     private void revertChanges() {
         CheckoutCommand checkout = getGitOrThrow().checkout();
         checkout.setStartPoint("HEAD");
-        fileViewer.getSelectedFiles().forEach(checkout::addPath);
+        List<String> selectedFiles = fileViewer.getSelectedFiles();
+        selectedFiles.forEach(checkout::addPath);
+        result = new RevertChangesResult(selectedFiles);
         try {
             checkout.call();
         } catch (GitAPIException e) {
