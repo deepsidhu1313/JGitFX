@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 public abstract class AddMenuItem extends MenuItem {
 
     /**
+     * Constructs a MenuItem that will add the untracked files to the git repository.
      *
-     * @param git
      * @param filePatternGetter the list of the relative path(s) from the root directory of the files to add/stage.
      */
     public AddMenuItem(Val<Git> git, Supplier<List<String>> filePatternGetter) {
