@@ -24,6 +24,9 @@ public interface FileSelecter {
      */
     void refreshTree(Status status);
 
+    /**
+     * @return the files that were selected and on which the user wants some action to be applied
+     */
     List<String> getSelectedFiles();
 
 }
