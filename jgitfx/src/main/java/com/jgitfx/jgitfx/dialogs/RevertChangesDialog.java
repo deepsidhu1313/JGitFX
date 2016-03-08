@@ -15,6 +15,6 @@ public class RevertChangesDialog extends Dialog<Optional<RevertChangesResult>> {
         setResizable(true);
 
         setDialogPane(pane);
-        setResultConverter(buttonType -> Optional.ofNullable(pane.getRevertChangesResult()));
+        setResultConverter(buttonType -> Optional.ofNullable(pane.getResult()));
     }
 }

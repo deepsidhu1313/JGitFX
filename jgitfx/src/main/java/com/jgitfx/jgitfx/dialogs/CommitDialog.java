@@ -15,6 +15,6 @@ public class CommitDialog extends Dialog<Optional<CommitResult>> {
         setResizable(true);
 
         setDialogPane(pane);
-        setResultConverter(buttonType -> Optional.ofNullable(pane.getCommitResult()));
+        setResultConverter(buttonType -> Optional.ofNullable(pane.getResult()));
     }
 }

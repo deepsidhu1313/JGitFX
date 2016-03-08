@@ -32,7 +32,7 @@ public abstract class RevertChangesDialogPaneBase<F extends Node & FileSelecter>
     public final ButtonType getRevertButtonType() { return revertButtonType; }
 
     private RevertChangesResult result;
-    public final RevertChangesResult getRevertChangesResult() { return result; }
+    public final RevertChangesResult getResult() { return result; }
 
     public RevertChangesDialogPaneBase(Val<Git> git, F fileSelector, ButtonType revertButtonType) {
         super();

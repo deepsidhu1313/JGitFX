@@ -52,6 +52,7 @@ public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extend
     public final ButtonType getCommitButtonType() { return commitButtonType; }
 
     private CommitResult result;
+    public final CommitResult getResult() { return result; }
 
     /**
      * Base constructor for a CommitDialogPane
@@ -71,14 +72,6 @@ public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extend
 
         // commit button is disabled when there are no selected files
         commitButton.disableProperty().bind(Bindings.not(fileViewer.hasSelectedFilesProperty()));
-    }
-
-    /**
-     *
-     * @return the result of the commit
-     */
-    public final CommitResult getCommitResult() {
-        return result;
     }
 
     private void addAndCommitSelectedFiles() {
