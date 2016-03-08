@@ -13,8 +13,7 @@ import java.util.List;
 public interface FileSelecter {
 
     /**
-     *
-     * @return true at least one file has been selected
+     * @return true if at least one file has been selected
      */
     boolean hasSelectedFiles();
     ObservableBooleanValue hasSelectedFilesProperty();
