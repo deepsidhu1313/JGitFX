@@ -2,6 +2,7 @@ package com.jgitfx.jgitfx.menus;
 
 import com.jgitfx.jgitfx.dialogs.RevertChangesDialog;
 import com.jgitfx.jgitfx.dialogs.RevertChangesDialogPane;
+import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
@@ -24,7 +25,7 @@ public class RevertChangesMenuItem extends MenuItem {
             try {
                 Status status = git.getOrThrow().status().call();
                 if (status.hasUncommittedChanges()) {
-                    new RevertChangesDialog(new RevertChangesDialogPane(git, status)).showAndWait();
+                    new RevertChangesDialog(new RevertChangesDialogPane(git, new SelectableFileViewer(status))).showAndWait();
                 } else {
                     new Alert(Alert.AlertType.INFORMATION, "No changes have been registered since last commit", ButtonType.OK)
                             .showAndWait();

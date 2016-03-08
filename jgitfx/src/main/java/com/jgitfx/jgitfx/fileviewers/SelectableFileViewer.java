@@ -2,6 +2,7 @@ package com.jgitfx.jgitfx.fileviewers;
 
 import com.jgitfx.jgitfx.GitFileStatus;
 import com.jgitfx.jgitfx.ModifiedPath;
+import com.jgitfx.jgitfx.dialogs.FileSelecter;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.CheckBoxTreeItem;
@@ -37,7 +38,7 @@ import java.util.List;
  *     <li>When ready to apply some action on the selected files, get those files via {@link #getSelectedFiles()}</li>
  * </ul>
  */
-public class SelectableFileViewer extends Region {
+public class SelectableFileViewer extends Region implements FileSelecter {
 
     private final TreeView<ModifiedPath> view = new TreeView<>();
     private final CheckBoxTreeItem<ModifiedPath> root = new CheckBoxTreeItem<>();

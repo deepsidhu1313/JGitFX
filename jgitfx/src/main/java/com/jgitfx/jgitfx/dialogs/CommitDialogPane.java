@@ -1,5 +1,6 @@
 package com.jgitfx.jgitfx.dialogs;
 
+import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -10,14 +11,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.reactfx.value.Val;
 
 /**
  * A basic implementation of {@link CommitDialogPaneBase}.
  */
-public class CommitDialogPane extends CommitDialogPaneBase {
+public class CommitDialogPane extends CommitDialogPaneBase<SelectableFileViewer> {
 
     // GUI components
     private final TextArea messageArea = new TextArea();
@@ -36,15 +36,15 @@ public class CommitDialogPane extends CommitDialogPaneBase {
     private final SplitPane splitter = new SplitPane();
     protected final SplitPane getSplitter() { return splitter; }
 
-    public CommitDialogPane(Val<Git> git, Status status) {
-        super(git, status, new ButtonType("Commit", ButtonBar.ButtonData.YES));
+    public CommitDialogPane(Val<Git> git, SelectableFileViewer fileViewer) {
+        super(git, fileViewer, new ButtonType("Commit", ButtonBar.ButtonData.YES));
 
         getButtonTypes().addAll(ButtonType.CANCEL);
 
         splitter.setOrientation(Orientation.VERTICAL);
         splitter.getItems().addAll(
                 // top
-                getFileViewer(),
+                fileViewer,
 
                 // bottom
                 new VBox(

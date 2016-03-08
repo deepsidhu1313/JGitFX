@@ -2,13 +2,13 @@ package com.jgitfx.jgitfx.dialogs;
 
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.beans.binding.Bindings;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -24,14 +24,15 @@ import org.reactfx.value.Val;
  * but a developer can configure the {@link AddCommand} and {@link CommitCommand}
  * via {@link #configureAddCommand(AddCommand)} and
  * {@link #configureCommitCommand(CommitCommand)}, respectively.</p>
+ *
+ * @param <F> the object to use for displaying which files are selected
  */
-public abstract class CommitDialogPaneBase extends DialogPane {
+public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extends DialogPane {
 
     private final Val<Git> git;
     private Git getGitOrThrow() { return git.getOrThrow(); }
 
-    private final SelectableFileViewer fileViewer;
-    protected final SelectableFileViewer getFileViewer() { return fileViewer; }
+    private final F fileViewer;
 
     protected abstract String getCommitMessage();
 
@@ -47,13 +48,11 @@ public abstract class CommitDialogPaneBase extends DialogPane {
     /**
      * Base constructor for a CommitDialogPane
      *
-     * @param git the Git repository
-     * @param status the initial status to use to initialize {@link SelectableFileViewer}
      * @param commitButtonType the type to use for the commit button
      */
-    public CommitDialogPaneBase(Val<Git> git, Status status, ButtonType commitButtonType) {
+    public CommitDialogPaneBase(Val<Git> git, F fileSelector, ButtonType commitButtonType) {
         this.git = git;
-        this.fileViewer = new SelectableFileViewer(status);
+        this.fileViewer = fileSelector;
 
         this.commitButtonType = commitButtonType;
         getButtonTypes().add(commitButtonType);
