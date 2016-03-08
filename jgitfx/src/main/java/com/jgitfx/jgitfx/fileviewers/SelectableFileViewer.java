@@ -51,6 +51,7 @@ public class SelectableFileViewer extends Region {
 
     public SelectableFileViewer(Status status) {
         super();
+        getStyleClass().add("selectable-file-viewer");
         view.getStyleClass().add("selectable-file-tree-view");
         view.setRoot(root);
         view.setShowRoot(false);
