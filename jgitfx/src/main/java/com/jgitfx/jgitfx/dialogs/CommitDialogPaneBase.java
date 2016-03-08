@@ -1,6 +1,5 @@
 package com.jgitfx.jgitfx.dialogs;
 
-import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -13,7 +12,11 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.treewalk.WorkingTreeIterator;
 import org.reactfx.value.Val;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * A base class for designing {@code CommitDialogPane}s.
@@ -22,9 +25,9 @@ import org.reactfx.value.Val;
  * in this class, but subclasses can customize the layout. When the user
  * clicks on the {@code Commit Button}, the selected files are added (staged)
  * before being committed. The defaults should suffice for most users needs,
- * but a developer can configure the {@link AddCommand} and {@link CommitCommand}
- * via {@link #configureAddCommand(AddCommand)} and
- * {@link #configureCommitCommand(CommitCommand)}, respectively.</p>
+ * but a developer can configure the {@link AddCommand}'s {@link WorkingTreeIterator}
+ * via {@link #setWorkingTreeIterator(WorkingTreeIterator)} and the {@link CommitCommand}
+ * via {@link #configureCommitCommand(CommitCommand)}</p>
  *
  * @param <F> the object to use for displaying which files are selected
  */
@@ -35,6 +38,9 @@ public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extend
 
     private final F fileViewer;
     protected final F getFileViewer() { return fileViewer; }
+
+    private Optional<WorkingTreeIterator> workingTreeIterator = Optional.empty();
+    protected final void setWorkingTreeIterator(WorkingTreeIterator iterator) { workingTreeIterator = Optional.of(iterator); }
 
     protected abstract String getCommitMessage();
 
@@ -68,9 +74,6 @@ public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extend
     }
 
     /**
-     * Note: the {@link CommitResult}'s list of affected files assumes that the files added all
-     * came from {@link SelectableFileViewer#getSelectedFiles()}. If a developer deviates from this,
-     * ths affected files will not be correct.
      *
      * @return the result of the commit
      */
@@ -79,28 +82,21 @@ public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extend
     }
 
     private void addAndCommitSelectedFiles() {
+        List<String> selectedFiles = fileViewer.getSelectedFiles();
         try {
             AddCommand add = getGitOrThrow().add();
-            configureAddCommand(add);
+            selectedFiles.forEach(add::addFilepattern);
+            workingTreeIterator.ifPresent(add::setWorkingTreeIterator);
             add.call();
 
             CommitCommand commit = getGitOrThrow().commit();
             configureCommitCommand(commit);
             RevCommit revCommit = commit.call();
 
-            result = new CommitResult(fileViewer.getSelectedFiles(), revCommit);
+            result = new CommitResult(selectedFiles, revCommit);
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Method used to configure the {@link AddCommand} before it is called. Default
-     * configuration adds the selected files.
-     * @param addCmd the add command to configure
-     */
-    protected void configureAddCommand(AddCommand addCmd) {
-        fileViewer.getSelectedFiles().forEach(addCmd::addFilepattern);
     }
 
     /**
