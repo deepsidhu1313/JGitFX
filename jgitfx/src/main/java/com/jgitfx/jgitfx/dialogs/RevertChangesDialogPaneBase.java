@@ -1,6 +1,5 @@
 package com.jgitfx.jgitfx.dialogs;
 
-import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -8,6 +7,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.reactfx.value.Val;
 
@@ -18,7 +18,7 @@ import org.reactfx.value.Val;
  *
  * @param <F> the object to use for displaying which files are selected
  */
-public class RevertChangesDialogPaneBase<F extends Node & FileSelecter> extends DialogPane {
+public abstract class RevertChangesDialogPaneBase<F extends Node & FileSelecter> extends DialogPane {
 
     private final Val<Git> git;
     private Git getGitOrThrow() { return git.getOrThrow(); }
@@ -43,7 +43,6 @@ public class RevertChangesDialogPaneBase<F extends Node & FileSelecter> extends 
     }
 
     private void revertChanges() {
-        // Bug: does not account for an update that doesn't have any changes...
         CheckoutCommand checkout = getGitOrThrow().checkout();
         checkout.setStartPoint("HEAD");
         fileViewer.getSelectedFiles().forEach(checkout::addPath);
@@ -55,15 +54,35 @@ public class RevertChangesDialogPaneBase<F extends Node & FileSelecter> extends 
     }
 
     /**
-     * Refreshes the {@link SelectableFileViewer} if new files were added, tracked files removed,
-     * or tracked files were modified recently.
+     * Refreshes the view to show any changes that might have affected the current files
+     * shown by {@link #fileViewer}.
+     *
+     * <p>If modified tracked files have been manually reverted to their previous state or other unmodified
+     * tracked files were modified, this method will call {@link #displayFileViewer(Status)} if
+     * {@link Status#hasUncommittedChanges()} returns true and {@link #displayPlaceholder()} if it returns false.
      */
-    protected final void refreshTree() {
+    protected final void refreshView() {
         try {
-            // Bug: does not account for an update where there are no changes....
-            fileViewer.refreshTree(getGitOrThrow().status().call());
+            Status status = getGitOrThrow().status().call();
+            if (status.hasUncommittedChanges()) {
+                displayFileViewer(status);
+            } else {
+                displayPlaceholder();
+            }
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Update the view to match the new {@link Status} of the Git repository
+     */
+    protected void displayFileViewer(Status status) {
+        fileViewer.refreshTree(status);
+    }
+
+    /**
+     * Update the view to inform the user that there are no changes registered.
+     */
+    protected abstract void displayPlaceholder();
 }

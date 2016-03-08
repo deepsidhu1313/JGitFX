@@ -9,6 +9,7 @@ import javafx.scene.control.DialogPane;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -121,16 +122,36 @@ public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extend
     }
 
     /**
-     * Refreshes the {@link SelectableFileViewer} if new files were added, tracked files removed,
-     * or tracked files were modified recently.
+     * Refreshes the view to show any changes that might have affected the current files
+     * shown by {@link #fileViewer}.
+     *
+     * <p>If new files were added, tracked files removed, or tracked files were modified, this method
+     * will call {@link #displayFileViewer(Status)} if {@link Status#hasUncommittedChanges()} returns
+     * true and {@link #displayPlaceHolder()} if it returns false.
      */
-    protected final void refreshTree() {
+    protected final void refreshView() {
         try {
-            // Bug: if changes are reverted, then file tree should display a note saying that
-            fileViewer.refreshTree(getGitOrThrow().status().call());
+            Status status = getGitOrThrow().status().call();
+            if (status.hasUncommittedChanges()) {
+                displayFileViewer(status);
+            } else {
+                displayPlaceHolder();
+            }
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Update the view to match the new {@link Status} of the Git repository
+     */
+    protected void displayFileViewer(Status status) {
+        fileViewer.refreshTree(status);
+    }
+
+    /**
+     * Update the view to inform the user that there are no changes registered.
+     */
+    protected abstract void displayPlaceHolder();
 
 }
