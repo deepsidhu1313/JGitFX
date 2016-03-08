@@ -86,4 +86,38 @@ public class GitFileStatusTreeCell extends CheckBoxTreeCell<ModifiedPath> {
         removed     .addListener(c -> pseudoClassStateChanged(REMOVED,      removed.get()));
     }
 
+    @Override
+    public void updateItem(ModifiedPath item, boolean empty) {
+        super.updateItem(item, empty);
+        if (!empty && item != null) {
+            switch (item.getStatus()) {
+                case ADDED:
+                    falsifyProperties(unchanged, modified, removed);
+                    added.set(true);
+                    break;
+                case MODIFIED:
+                    falsifyProperties(added, unchanged, removed);
+                    modified.set(true);
+                    break;
+                case UNCHANGED:
+                    falsifyProperties(added, modified, removed);
+                    unchanged.set(true);
+                    break;
+                case REMOVED:
+                    falsifyProperties(added, unchanged, modified);
+                    removed.set(true);
+                    break;
+                default:
+                    throw new AssertionError("Unreachable code");
+            }
+        }
+
+    }
+
+    private void falsifyProperties(BooleanProperty first, BooleanProperty second, BooleanProperty third) {
+        first.set(false);
+        second.set(false);
+        third.set(false);
+    }
+
 }
