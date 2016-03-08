@@ -24,6 +24,7 @@ public abstract class RevertChangesDialogPaneBase<F extends Node & FileSelecter>
     private Git getGitOrThrow() { return git.getOrThrow(); }
 
     private final F fileViewer;
+    protected final F getFileViewer() { return fileViewer; }
 
     private final ButtonType revertButtonType;
     public final ButtonType getRevertButtonType() { return revertButtonType; }

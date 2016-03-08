@@ -16,11 +16,9 @@ import org.reactfx.value.Val;
 public class RevertChangesDialogPane extends RevertChangesDialogPaneBase<SelectableFileViewer> {
 
     private final VBox vbox = new VBox();
-    private final SelectableFileViewer fileViewer;
 
     public RevertChangesDialogPane(Val<Git> git, SelectableFileViewer fileViewer) {
         super(git, fileViewer, new ButtonType("Revert", ButtonBar.ButtonData.YES));
-        this.fileViewer = fileViewer;
 
         vbox.getChildren().addAll(
                 new Label("Revert selected files back to previous commit"),
@@ -31,15 +29,15 @@ public class RevertChangesDialogPane extends RevertChangesDialogPaneBase<Selecta
 
     @Override
     protected void displayFileViewer(Status status) {
-        if (!vbox.getChildren().contains(fileViewer)) {
-            vbox.getChildren().set(1, fileViewer);
+        if (!vbox.getChildren().contains(getFileViewer())) {
+            vbox.getChildren().set(1, getFileViewer());
         }
-        fileViewer.refreshTree(status);
+        getFileViewer().refreshTree(status);
     }
 
     @Override
     protected void displayPlaceholder() {
-        if (vbox.getChildren().contains(fileViewer)) {
+        if (vbox.getChildren().contains(getFileViewer())) {
             vbox.getChildren().set(1, new StackPane(new Label("No changes detected...")));
         }
     }

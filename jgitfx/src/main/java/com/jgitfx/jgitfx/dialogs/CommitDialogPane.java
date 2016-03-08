@@ -31,8 +31,6 @@ public class CommitDialogPane extends CommitDialogPaneBase<SelectableFileViewer>
     // TODO: implement GUI component for author
     @Override protected PersonIdent getAuthor() { return new PersonIdent("", ""); }
 
-    private final SelectableFileViewer fileViewer;
-
     // Layout Handlers
     private final BorderPane borderPane = new BorderPane();
     protected final BorderPane getBorderPane() { return borderPane; }
@@ -42,7 +40,6 @@ public class CommitDialogPane extends CommitDialogPaneBase<SelectableFileViewer>
 
     public CommitDialogPane(Val<Git> git, SelectableFileViewer fileViewer) {
         super(git, fileViewer, new ButtonType("Commit", ButtonBar.ButtonData.YES));
-        this.fileViewer = fileViewer;
 
         getButtonTypes().addAll(ButtonType.CANCEL);
 
@@ -68,15 +65,15 @@ public class CommitDialogPane extends CommitDialogPaneBase<SelectableFileViewer>
 
     @Override
     protected void displayFileViewer(Status status) {
-        if (!splitter.getItems().contains(fileViewer)) {
-            splitter.getItems().set(0, fileViewer);
+        if (!splitter.getItems().contains(getFileViewer())) {
+            splitter.getItems().set(0, getFileViewer());
         }
-        fileViewer.refreshTree(status);
+        getFileViewer().refreshTree(status);
     }
 
     @Override
     protected void displayPlaceHolder() {
-        if (splitter.getItems().contains(fileViewer)) {
+        if (splitter.getItems().contains(getFileViewer())) {
             splitter.getItems().set(0, new StackPane(new Label("No changes detected...")));
         }
     }

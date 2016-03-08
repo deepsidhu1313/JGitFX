@@ -34,6 +34,7 @@ public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extend
     private Git getGitOrThrow() { return git.getOrThrow(); }
 
     private final F fileViewer;
+    protected final F getFileViewer() { return fileViewer; }
 
     protected abstract String getCommitMessage();
 
