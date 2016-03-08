@@ -29,6 +29,10 @@ import java.util.Optional;
  * via {@link #setWorkingTreeIterator(WorkingTreeIterator)} and the {@link CommitCommand}
  * via {@link #configureCommitCommand(CommitCommand)}</p>
  *
+ * <p>If {@link javafx.scene.control.Dialog#show()} is used as opposed to its {@code showAndWait()} command
+ * and the user modifies some file so that the {@link #fileViewer} no longer shows the correct files,
+ * use {@link #refreshView()} to update the view.</p>
+ *
  * @param <F> the object to use for displaying which files are selected
  */
 public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extends DialogPane {

@@ -18,6 +18,10 @@ import java.util.List;
  * tracked file(s) that were modified since the time of the most recent commit back
  * to the state they had in the most recent commit.
  *
+ * <p>If {@link javafx.scene.control.Dialog#show()} is used as opposed to its {@code showAndWait()} command
+ * and the user modifies some file so that the {@link #fileViewer} no longer shows the correct files,
+ * use {@link #refreshView()} to update the view.</p>
+ *
  * @param <F> the object to use for displaying which files are selected
  */
 public abstract class RevertChangesDialogPaneBase<F extends Node & FileSelecter> extends DialogPane {
