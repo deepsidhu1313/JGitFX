@@ -230,6 +230,20 @@ class JGitSimulationSpec extends Specification {
         println "\nFinished printing log list"
     }
 
+    def "Staging a previously-untracked file and re-staging it again in a commit dialog does not throw any errors"() {
+        setup: "Create a new file and add it to repository"
+        File f = new File(rootDir, "tempFile.txt")
+        f.createNewFile()
+        git.add().addFilepattern(f.getRelativePath()).call()
+
+        when: "a commit dialog to be open and commit that file, which re-adds the new file"
+        git.add().addFilepattern(f.getRelativePath()).call()
+        git.commit().setAuthor(fakeAuthor).setMessage("testing double add call").call()
+
+        then: "this won't cause a problem"
+        noExceptionThrown()
+    }
+
     def cleanupSpec() {
         // clean up memory
         git.close()
