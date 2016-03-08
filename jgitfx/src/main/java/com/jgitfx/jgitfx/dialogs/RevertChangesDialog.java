@@ -2,10 +2,12 @@ package com.jgitfx.jgitfx.dialogs;
 
 import javafx.scene.control.Dialog;
 
+import java.util.Optional;
+
 /**
  * A dialog for displaying subclasses of {@link RevertChangesDialogPaneBase}
  */
-public class RevertChangesDialog extends Dialog<RevertChangesResult> {
+public class RevertChangesDialog extends Dialog<Optional<RevertChangesResult>> {
 
     public RevertChangesDialog(RevertChangesDialogPaneBase pane) {
         super();
@@ -13,10 +15,6 @@ public class RevertChangesDialog extends Dialog<RevertChangesResult> {
         setResizable(true);
 
         setDialogPane(pane);
-        setResultConverter(buttonType ->
-                buttonType.equals(pane.getRevertButtonType())
-                        ? pane.getRevertChangesResult()
-                        : null
-        );
+        setResultConverter(buttonType -> Optional.ofNullable(pane.getRevertChangesResult()));
     }
 }
