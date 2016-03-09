@@ -9,7 +9,7 @@ import java.io.File;
 /**
  * Base class used for Repository-related MenuItems such as {@link CreateRepoMenuItem}
  * and {@link OpenRepoMenuItem}; essentially, provides the convenient
- * {@link #createChooser(String)} method and its related {@link #initialDirectory} bean.
+ * {@link #createDirChooser(String)} method and its related {@link #initialDirectory} bean.
  */
 public abstract class RepoMenuItemBase extends MenuItem {
 
@@ -36,7 +36,7 @@ public abstract class RepoMenuItemBase extends MenuItem {
      * @param chooserTitle the Title to set for the chooser
      * @return a DirectoryChooser with the set title and initial directory of {@link #getInitialDirectory()}
      */
-    protected final DirectoryChooser createChooser(String chooserTitle) {
+    protected final DirectoryChooser createDirChooser(String chooserTitle) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle(chooserTitle);
         chooser.setInitialDirectory(getInitialDirectory());

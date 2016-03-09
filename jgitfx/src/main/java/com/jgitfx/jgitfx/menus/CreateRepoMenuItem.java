@@ -39,7 +39,7 @@ public class CreateRepoMenuItem extends RepoMenuItemBase {
         super(directory, text, graphic);
         setPostRepositoryCreation(afterCreationConsumer);
         setOnAction(ae -> {
-            File parentDir = createChooser("Choose the parent directory of the new Repository").showDialog(window);
+            File parentDir = createDirChooser("Choose the parent directory of the new Repository").showDialog(window);
             if (parentDir != null) {
                 try {
                     Git git = createRepoIn(parentDir);

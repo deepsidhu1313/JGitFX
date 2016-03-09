@@ -34,7 +34,7 @@ public class OpenRepoMenuItem extends RepoMenuItemBase {
         super(directory, text, graphic);
         setPostOpenRepository(afterOpeningConsumer);
         setOnAction(ae -> {
-            File gitRepoDir = createChooser("Open a Repository ('.git' folder)...").showDialog(window);
+            File gitRepoDir = createDirChooser("Open a Repository ('.git' folder)...").showDialog(window);
             if (gitRepoDir != null && gitRepoDir.toString().endsWith(".git")) {
                 try {
                     Git git = openRepo(gitRepoDir);
