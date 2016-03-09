@@ -1,5 +1,6 @@
 package com.jgitfx.jgitfx.menus;
 
+import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
@@ -20,11 +21,12 @@ public abstract class AddMenuItem extends MenuItem {
     /**
      * Constructs a MenuItem that will add the untracked files to the git repository.
      *
+     * @param text the MenuItem's text
+     * @param graphic the graphic to display besides the MenuItem
      * @param filePatternGetter the list of the relative path(s) from the root directory of the files to add/stage.
      */
-    public AddMenuItem(Val<Git> git, Supplier<List<String>> filePatternGetter) {
-        super();
-        setText("Add item...");
+    public AddMenuItem(String text, Node graphic, Val<Git> git, Supplier<List<String>> filePatternGetter) {
+        super(text, graphic);
         setOnAction(ae -> {
             try {
                 AddCommand addCmd = git.getOrThrow().add();
@@ -37,5 +39,19 @@ public abstract class AddMenuItem extends MenuItem {
             }
         });
 
+    }
+
+    /**
+     * Constructs an AddMenuItem with the specified text and no graphic.
+     */
+    public AddMenuItem(String text, Val<Git> git, Supplier<List<String>> filePatternGetter) {
+        this(text, null, git, filePatternGetter);
+    }
+
+    /**
+     * Constructs an AddMenuItem with "Add File(s)..." as its text and no graphic.
+     */
+    public AddMenuItem(Val<Git> git, Supplier<List<String>> filePatternGetter) {
+        this("", git, filePatternGetter);
     }
 }

@@ -3,6 +3,7 @@ package com.jgitfx.jgitfx.menus;
 import com.jgitfx.jgitfx.dialogs.RevertChangesDialog;
 import com.jgitfx.jgitfx.dialogs.RevertChangesDialogPane;
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
@@ -19,8 +20,8 @@ import org.reactfx.value.Val;
  */
 public class RevertChangesMenuItem extends MenuItem {
 
-    public RevertChangesMenuItem(Val<Git> git) {
-        super("Revert local changes...");
+    public RevertChangesMenuItem(String text, Node graphic, Val<Git> git) {
+        super(text, graphic);
         setOnAction(ae -> {
             try {
                 Status status = git.getOrThrow().status().call();
@@ -34,5 +35,19 @@ public class RevertChangesMenuItem extends MenuItem {
                 e.printStackTrace();
             }
         });
+    }
+
+    /**
+     * Constructs a RevertChangesMenuItem with the given text and no graphic
+     */
+    public RevertChangesMenuItem(String text, Val<Git> git) {
+        this(text, null, git);
+    }
+
+    /**
+     * Constructs a RevertChangesMenuItem with text "Revert changes..."
+     */
+    public RevertChangesMenuItem(Val<Git> git) {
+        this("Revert changes...", git);
     }
 }

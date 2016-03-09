@@ -3,6 +3,7 @@ package com.jgitfx.jgitfx.menus;
 import com.jgitfx.jgitfx.dialogs.CommitDialog;
 import com.jgitfx.jgitfx.dialogs.CommitDialogPane;
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
@@ -17,8 +18,13 @@ import org.reactfx.value.Val;
  */
 public class CommitMenuItem extends MenuItem {
 
-    public CommitMenuItem(Val<Git> git) {
-        super("Commit...");
+    /**
+     * Constructs a CommitMenuItem
+     * @param text the MenuItem's text
+     * @param graphic the MenuItem's graphic
+     */
+    public CommitMenuItem(String text, Node graphic, Val<Git> git) {
+        super(text, graphic);
         setOnAction(ae -> {
             try {
                 Status status = git.getOrThrow().status().call();
@@ -32,5 +38,19 @@ public class CommitMenuItem extends MenuItem {
                 e.printStackTrace();
             }
         });
+    }
+
+    /**
+     * Constructs a CommitMenuItem with the given text but no graphic.
+     */
+    public CommitMenuItem(String text, Val<Git> git) {
+        this(text, null, git);
+    }
+
+    /**
+     * Constructs a CommitMenuItem with the text "Commit..." and no graphic.
+     */
+    public CommitMenuItem(Val<Git> git) {
+        this("Commit...", git);
     }
 }
