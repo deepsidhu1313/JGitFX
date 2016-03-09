@@ -8,8 +8,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.io.File;
 import java.util.function.Consumer;
 
-import static com.jgitfx.jgitfx.GitActions.createRepoIn;
-
 /**
  * CreateRepoMenuItem is a MenuItem that will create a new repository and
  * return its output as a {@link Git} object when clicked via its {@link #postRepositoryCreation}.
@@ -42,7 +40,7 @@ public class CreateRepoMenuItem extends RepoMenuItemBase {
             File parentDir = createDirChooser("Choose the parent directory of the new Repository").showDialog(window);
             if (parentDir != null) {
                 try {
-                    Git git = createRepoIn(parentDir);
+                    Git git = Git.init().setDirectory(parentDir).call();
                     postRepositoryCreation.accept(git);
                 } catch (GitAPIException e) {
                     e.printStackTrace();
