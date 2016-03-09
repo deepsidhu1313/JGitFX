@@ -26,10 +26,12 @@ public class OpenRepoMenuItem extends RepoMenuItemBase {
     /**
      * Creates an OpenRepoMenuItem
      * @param window the window to use in {@link javafx.stage.DirectoryChooser#showDialog(Window)}
+     * @param directory the initial directory to display when the {@link javafx.stage.DirectoryChooser} is shown.
      * @param afterOpeningConsumer the consumer called with the returned {@link Git} object
      */
-    public OpenRepoMenuItem(Window window, File directory, Consumer<Git> afterOpeningConsumer, Node graphic) {
-        super(directory, "Open a Repository...", graphic);
+    public OpenRepoMenuItem(Window window, File directory, Consumer<Git> afterOpeningConsumer,
+                            String text, Node graphic) {
+        super(directory, text, graphic);
         setPostOpenRepository(afterOpeningConsumer);
         setOnAction(ae -> {
             File gitRepoDir = createChooser("Open a Repository ('.git' folder)...").showDialog(window);
@@ -45,9 +47,16 @@ public class OpenRepoMenuItem extends RepoMenuItemBase {
     }
 
     /**
-     * Same as {@link #OpenRepoMenuItem(Window, File, Consumer, Node)} except without a graphic
+     * Constructs an OpenRepoMenuItem with the given text and no graphic.
+     */
+    public OpenRepoMenuItem(Window window, File directory, Consumer<Git> afterOpeningFunction, String text) {
+        this(window, directory, afterOpeningFunction, text, null);
+    }
+
+    /**
+     * Constructs an OpenRepoMenuItem with the text "Open a Repository..." and no graphic.
      */
     public OpenRepoMenuItem(Window window, File directory, Consumer<Git> afterOpeningFunction) {
-        this(window, directory, afterOpeningFunction, null);
+        this(window, directory, afterOpeningFunction, "Open a Repository...");
     }
 }

@@ -14,8 +14,7 @@ import java.io.File;
 public abstract class RepoMenuItemBase extends MenuItem {
 
     /**
-     * The directory in which a {@link DirectoryChooser} should initially open when choosing
-     * a Git repository.
+     * The directory to initially show when the {@link DirectoryChooser} is displayed.
      */
     private File initialDirectory;
     public final File getInitialDirectory() { return initialDirectory;}
@@ -30,15 +29,6 @@ public abstract class RepoMenuItemBase extends MenuItem {
     public RepoMenuItemBase(File directory, String menuText, Node graphic) {
         super(menuText, graphic);
         setInitialDirectory(directory);
-    }
-
-    /**
-     * Constructs a RepoMenuItem without a graphic
-     * @param menuText the menuItem's text
-     * @param directory the directory to which to set {@link #initialDirectory}
-     */
-    public RepoMenuItemBase(File directory, String menuText) {
-        this(directory, menuText, null);
     }
 
     /**

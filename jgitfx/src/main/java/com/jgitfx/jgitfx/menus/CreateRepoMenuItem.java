@@ -30,10 +30,13 @@ public class CreateRepoMenuItem extends RepoMenuItemBase {
      *
      * @param window the window used for {@link javafx.stage.DirectoryChooser#showDialog(Window)}. Usually, the
      *               Application's primaryStage.
-     * @param afterCreationConsumer the consumer to call when a repository is created in the form of a {@link Git} object.
+     * @param directory the initial directory to display in the {@link javafx.stage.DirectoryChooser}.
+     * @param afterCreationConsumer the consumer to call when a repository is created
+     *                              in the form of a {@link Git} object.
      */
-    public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationConsumer, Node graphic) {
-        super(directory, "Create a new Repository...", graphic);
+    public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationConsumer,
+                              String text, Node graphic) {
+        super(directory, text, graphic);
         setPostRepositoryCreation(afterCreationConsumer);
         setOnAction(ae -> {
             File parentDir = createChooser("Choose the parent directory of the new Repository").showDialog(window);
@@ -49,10 +52,18 @@ public class CreateRepoMenuItem extends RepoMenuItemBase {
     }
 
     /**
-     * The same constructor as {@link #CreateRepoMenuItem(Window, File, Consumer, Node)} but without a graphic
+     * Constructs a CreateRepoMenuItem with the given text and no graphic.
+     */
+    public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationConsumer, String text) {
+        this(window, directory, afterCreationConsumer, text, null);
+    }
+
+    /**
+     * Constructs a CreateRepoMenuItem with the text "Create a new Repository..." and no graphic.
      */
     public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationConsumer) {
-        this(window, directory, afterCreationConsumer, null);
+        this(window, directory, afterCreationConsumer, "Create a new Repository...");
+
     }
 
 }
