@@ -27,7 +27,7 @@ public abstract class RepoMenuItemBase extends MenuItem {
      * @param directory the directory to which to set {@link #initialDirectory}
      * @param graphic the graphic to display to the left of the menuItem's text
      */
-    public RepoMenuItemBase(String menuText, File directory, Node graphic) {
+    public RepoMenuItemBase(File directory, String menuText, Node graphic) {
         super(menuText, graphic);
         setInitialDirectory(directory);
     }
@@ -37,8 +37,8 @@ public abstract class RepoMenuItemBase extends MenuItem {
      * @param menuText the menuItem's text
      * @param directory the directory to which to set {@link #initialDirectory}
      */
-    public RepoMenuItemBase(String menuText, File directory) {
-        this(menuText, directory, null);
+    public RepoMenuItemBase(File directory, String menuText) {
+        this(directory, menuText, null);
     }
 
     /**

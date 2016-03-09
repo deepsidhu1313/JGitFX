@@ -33,7 +33,7 @@ public class CreateRepoMenuItem extends RepoMenuItemBase {
      * @param afterCreationConsumer the consumer to call when a repository is created in the form of a {@link Git} object.
      */
     public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationConsumer, Node graphic) {
-        super("Create a new Repository...", directory, graphic);
+        super(directory, "Create a new Repository...", graphic);
         setPostRepositoryCreation(afterCreationConsumer);
         setOnAction(ae -> {
             File parentDir = createChooser("Choose the parent directory of the new Repository").showDialog(window);

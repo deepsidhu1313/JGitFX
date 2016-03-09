@@ -29,7 +29,7 @@ public class OpenRepoMenuItem extends RepoMenuItemBase {
      * @param afterOpeningConsumer the consumer called with the returned {@link Git} object
      */
     public OpenRepoMenuItem(Window window, File directory, Consumer<Git> afterOpeningConsumer, Node graphic) {
-        super("Open a Repository...", directory, graphic);
+        super(directory, "Open a Repository...", graphic);
         setPostOpenRepository(afterOpeningConsumer);
         setOnAction(ae -> {
             File gitRepoDir = createChooser("Open a Repository ('.git' folder)...").showDialog(window);
