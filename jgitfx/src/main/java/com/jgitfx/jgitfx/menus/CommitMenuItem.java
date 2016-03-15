@@ -4,16 +4,13 @@ import com.jgitfx.jgitfx.dialogs.CommitDialog;
 import com.jgitfx.jgitfx.dialogs.CommitDialogPane;
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.MenuItem;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.reactfx.value.Val;
 
 /**
- * A {@link MenuItem} that displays a {@link CommitDialog} if there are changes or an information {@link Alert} that
- * notifies user that there are no changes to commit.
+ * A {@link CommitMenuItemBase} that will display a {@link CommitDialog}.
+ *
  */
 public class CommitMenuItem extends CommitMenuItemBase {
 
@@ -41,13 +38,8 @@ public class CommitMenuItem extends CommitMenuItemBase {
     }
 
     @Override
-    protected void displayCommitDialog(Val<Git> git, Status status) {
-        new CommitDialog(new CommitDialogPane(git, new SelectableFileViewer(status))).showAndWait();
+    protected void displayCommitDialog(Val<Git> git, Status firstStatus) {
+        new CommitDialog(new CommitDialogPane(git, new SelectableFileViewer(firstStatus))).showAndWait();
     }
 
-    @Override
-    protected void displayNoChangesDialog() {
-        new Alert(Alert.AlertType.INFORMATION, "No changes have been registered", ButtonType.OK)
-                .showAndWait();
-    }
 }

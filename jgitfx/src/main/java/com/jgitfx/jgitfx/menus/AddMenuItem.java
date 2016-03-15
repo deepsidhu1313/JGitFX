@@ -11,12 +11,29 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * A {@link MenuItem} that will add the untracked file(s) to the git repository.
+ * A {@link MenuItem} with a method that will add the untracked file(s) to the git repository.
  * <p>Note: this object is intended to be added to a {@link javafx.scene.control.ContextMenu} that is displayed
  * when a user right-clicks a row (presumably representing some file) in a TreeView; it is not intended to be
  * added to a {@link javafx.scene.control.Menu} though that is still possible.
+ *
+ * <p>To add this functionality, use</p>
+ * <pre>
+ *     {@code
+ *     AddMenuItem amItem = // creation code;
+ *     amItem.setOnAction(ae -> {
+ *        // any necessary code if need be...
+ *
+ *        amItem.addFiles();
+ *
+ *        // any necessary code if need be...
+ *     });
+ *     }
+ * </pre>
  */
 public abstract class AddMenuItem extends MenuItem {
+
+    private final Val<Git> git;
+    private final Supplier<List<String>> filePatternGetter;
 
     /**
      * Constructs a MenuItem that will add the untracked files to the git repository.
@@ -27,31 +44,43 @@ public abstract class AddMenuItem extends MenuItem {
      */
     public AddMenuItem(String text, Node graphic, Val<Git> git, Supplier<List<String>> filePatternGetter) {
         super(text, graphic);
-        setOnAction(ae -> {
-            try {
-                AddCommand addCmd = git.getOrThrow().add();
-                // insure add command will add newly staged files
-                addCmd.setUpdate(false);
-                filePatternGetter.get().forEach(addCmd::addFilepattern);
-                addCmd.call();
-            } catch (GitAPIException e) {
-                e.printStackTrace();
-            }
-        });
-
+        this.git = git;
+        this.filePatternGetter = filePatternGetter;
     }
 
     /**
-     * Constructs an AddMenuItem with the specified text and no graphic.
+     * Adds the files returned from {@link #filePatternGetter} and then calls {@link #updateFiles(List)}
      */
-    public AddMenuItem(String text, Val<Git> git, Supplier<List<String>> filePatternGetter) {
-        this(text, null, git, filePatternGetter);
+    public final void addFiles() {
+        try {
+            AddCommand addCmd = git.getOrThrow().add();
+            // insure add command will add newly staged files
+            addCmd.setUpdate(false);
+
+            // add files
+            List<String> files = filePatternGetter.get();
+            files.forEach(addCmd::addFilepattern);
+
+            addCmd.call();
+
+            updateFiles(files);
+        } catch (GitAPIException e) {
+            handleGitAPIException(e);
+        }
     }
 
     /**
-     * Constructs an AddMenuItem with "Add File(s)..." as its text and no graphic.
+     * A method for optionally updating files after they are added to the repository. Called after {@link #addFiles()}.
+     * Default implementation does nothing.
+     * @param relativePaths the list of file's relative paths as {@code String}s.
      */
-    public AddMenuItem(Val<Git> git, Supplier<List<String>> filePatternGetter) {
-        this("", git, filePatternGetter);
+    protected void updateFiles(List<String> relativePaths) {}
+
+    /**
+     * If a {@link GitAPIException} is thrown, a developer can handle it here. Defaults to printing out stacktrace.
+     * @param e the exception that might be thrown from {@link #addFiles()}
+     */
+    protected void handleGitAPIException(GitAPIException e) {
+        e.printStackTrace();
     }
 }
