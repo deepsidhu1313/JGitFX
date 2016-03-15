@@ -19,7 +19,7 @@ import java.io.File;
  *        // code to get parent directory (probably via DirChooser
  *        File parentDir = // gets parent directory
  *
- *        Git git = cmItem.createGitRepo(parentDir);
+ *        Git git = crmItem.createGitRepo(parentDir);
  *
  *        // any other code (if needed)...
  *     });
