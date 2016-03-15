@@ -9,7 +9,7 @@ import java.util.Optional;
  */
 public class CommitDialog extends Dialog<Optional<CommitResult>> {
 
-    public CommitDialog(CommitDialogPaneBase pane) {
+    public CommitDialog(CommitDialogPaneBaseOld pane) {
         super();
         setTitle("Commit changes");
         setResizable(true);

@@ -17,9 +17,9 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.reactfx.value.Val;
 
 /**
- * A basic implementation of {@link CommitDialogPaneBase}.
+ * A basic implementation of {@link CommitDialogPaneBaseOld}.
  */
-public class CommitDialogPane extends CommitDialogPaneBase<SelectableFileViewer> {
+public class CommitDialogPane extends CommitDialogPaneBaseOld<SelectableFileViewer> {
 
     // GUI components
     private final TextArea messageArea = new TextArea();

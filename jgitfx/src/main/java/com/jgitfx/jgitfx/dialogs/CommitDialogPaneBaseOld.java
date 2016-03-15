@@ -36,7 +36,7 @@ import java.util.Optional;
  *
  * @param <F> the object to use for displaying which files are selected
  */
-public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extends DialogPane {
+public abstract class CommitDialogPaneBaseOld<F extends Node & FileSelecter> extends DialogPane {
 
     private final Val<Git> git;
     private Git getGitOrThrow() { return git.getOrThrow(); }
@@ -64,7 +64,7 @@ public abstract class CommitDialogPaneBase<F extends Node & FileSelecter> extend
      *
      * @param commitButtonType the type to use for the commit button
      */
-    public CommitDialogPaneBase(Val<Git> git, F fileSelector, ButtonType commitButtonType) {
+    public CommitDialogPaneBaseOld(Val<Git> git, F fileSelector, ButtonType commitButtonType) {
         super();
         this.git = git;
         this.fileViewer = fileSelector;
