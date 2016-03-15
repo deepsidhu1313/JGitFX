@@ -9,7 +9,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.reactfx.value.Val;
 
 
@@ -18,36 +17,34 @@ import org.reactfx.value.Val;
  * there are uncommitted changes and an alert dialog informing user there are no changes when
  * there are none.
  */
-public class RevertChangesMenuItem extends MenuItem {
+public class RevertChangesMenuItem extends RevertChangesMenuItemBase {
 
-    public RevertChangesMenuItem(String text, Node graphic, Val<Git> git) {
-        super(text, graphic);
-        setOnAction(ae -> {
-            try {
-                Status status = git.getOrThrow().status().call();
-                if (status.hasUncommittedChanges()) {
-                    new RevertChangesDialog(new RevertChangesDialogPane(git, new SelectableFileViewer(status))).showAndWait();
-                } else {
-                    new Alert(Alert.AlertType.INFORMATION, "No changes have been registered since last commit", ButtonType.OK)
-                            .showAndWait();
-                }
-            } catch (GitAPIException e) {
-                e.printStackTrace();
-            }
-        });
+    public RevertChangesMenuItem(Val<Git> git, String text, Node graphic) {
+        super(git, text, graphic);
     }
 
     /**
      * Constructs a RevertChangesMenuItem with the given text and no graphic
      */
-    public RevertChangesMenuItem(String text, Val<Git> git) {
-        this(text, null, git);
+    public RevertChangesMenuItem(Val<Git> git, String text) {
+        this(git, text, null);
     }
 
     /**
      * Constructs a RevertChangesMenuItem with text "Revert changes..."
      */
     public RevertChangesMenuItem(Val<Git> git) {
-        this("Revert changes...", git);
+        this(git, "Revert changes...");
+    }
+
+    @Override
+    public void displayRevertDialog(Val<Git> git, Status firstStatus) {
+        new RevertChangesDialog(new RevertChangesDialogPane(git, new SelectableFileViewer(firstStatus))).showAndWait();
+    }
+
+    @Override
+    public void displayNoChangesDialog() {
+        new Alert(Alert.AlertType.INFORMATION, "No changes have been registered since last commit", ButtonType.OK)
+                .showAndWait();
     }
 }
