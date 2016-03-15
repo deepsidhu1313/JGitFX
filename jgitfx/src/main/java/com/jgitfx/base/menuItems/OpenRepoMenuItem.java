@@ -1,4 +1,4 @@
-package com.jgitfx.jgitfx.menus;
+package com.jgitfx.base.menuItems;
 
 import java.io.File;
 import javafx.scene.Node;

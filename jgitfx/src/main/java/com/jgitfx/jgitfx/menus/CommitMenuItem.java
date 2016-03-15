@@ -1,5 +1,6 @@
 package com.jgitfx.jgitfx.menus;
 
+import com.jgitfx.base.menuItems.CommitMenuItemBase;
 import com.jgitfx.jgitfx.dialogs.CommitDialog;
 import com.jgitfx.jgitfx.dialogs.CommitDialogPane;
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;

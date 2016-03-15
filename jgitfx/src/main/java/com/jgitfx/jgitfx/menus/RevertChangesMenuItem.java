@@ -1,5 +1,6 @@
 package com.jgitfx.jgitfx.menus;
 
+import com.jgitfx.base.menuItems.RevertChangesMenuItemBase;
 import com.jgitfx.jgitfx.dialogs.RevertChangesDialog;
 import com.jgitfx.jgitfx.dialogs.RevertChangesDialogPane;
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;

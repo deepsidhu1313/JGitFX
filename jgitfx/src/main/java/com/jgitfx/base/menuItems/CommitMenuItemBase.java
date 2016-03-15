@@ -1,4 +1,4 @@
-package com.jgitfx.jgitfx.menus;
+package com.jgitfx.base.menuItems;
 
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -9,44 +9,42 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.reactfx.value.Val;
 
-
 /**
- * A {@link MenuItem} with a method that shows a dialog for reverting changes when
- * there are uncommitted changes and an alert dialog informing user there are no changes when
- * there are none.
+ * A {@link MenuItem} with a method that will display a custom commit dialog or
+ * inform the user that no changes have been made.
  *
- * <p>To add the functionality, use</p>
+ * <p>To add this functionality, use</p>
  * <pre>
  *     {@code
- *     RevertChangesMenuItem rcmItem = // creation code;
- *     rcmItem.setOnAction(ae -> {
- *        // any necessary code
+ *     CommitMenuItem cmItem = // creation code;
+ *     cmItem.setOnAction(ae -> {
+ *        // any necessary code if need be...
  *
- *        rcmItem.revertOrInform();
+ *        cmItem.commitOrInform();
  *
- *        // any other code (if needed)...
+ *        // any necessary code if need be...
  *     });
  *     }
  * </pre>
  */
-public abstract class RevertChangesMenuItemBase extends MenuItem {
+public abstract class CommitMenuItemBase extends MenuItem {
 
     private final Val<Git> git;
 
-    public RevertChangesMenuItemBase(Val<Git> git, String text, Node graphic) {
+    public CommitMenuItemBase(Val<Git> git, String text, Node graphic) {
         super(text, graphic);
         this.git = git;
     }
 
     /**
-     * When there are changes in tracked files that can be reverted, calls {@link #displayRevertDialog(Val, Status)}.
-     * Otherwise, calls {@link #displayNoChangesDialog()}.
+     * If the repository has uncommitted changes on tracked files, calls {@link #displayCommitDialog(Val, Status)};
+     * otherwise, calls {@link #displayNoChangesDialog()}.
      */
-    public final void revertOrInform() {
+    public final void commitOrInform() {
         try {
             Status status = git.getOrThrow().status().call();
             if (status.hasUncommittedChanges()) {
-                displayRevertDialog(git, status);
+                displayCommitDialog(git, status);
             } else {
                 displayNoChangesDialog();
             }
@@ -56,24 +54,24 @@ public abstract class RevertChangesMenuItemBase extends MenuItem {
     }
 
     /**
-     * Displays the revert dialog
+     * Displays the commit dialog when there are tracked files with uncommitted changes.
      * @param git the high porcelain Git object used to refresh a {@link com.jgitfx.jgitfx.fileviewers.FileSelecter}.
      * @param firstStatus the Status used to construct the first {@link javafx.scene.control.TreeView} for displaying
      *                    the files with uncommitted changes.
      */
-    public abstract void displayRevertDialog(Val<Git> git, Status firstStatus);
+    protected abstract void displayCommitDialog(Val<Git> git, Status firstStatus);
 
     /**
      * Displays an information dialog informing user that there aren't any tracked files with uncommitted changes.
      */
-    public void displayNoChangesDialog() {
-        new Alert(Alert.AlertType.INFORMATION, "No changes have been registered since last commit", ButtonType.OK)
+    protected void displayNoChangesDialog() {
+        new Alert(Alert.AlertType.INFORMATION, "No changes have been registered", ButtonType.OK)
                 .showAndWait();
     }
 
     /**
      * If a {@link GitAPIException} is thrown, a developer can handle it here. Defaults to printing out stacktrace.
-     * @param e the exception that might be thrown from {@link #revertOrInform()}
+     * @param e the exception that might be thrown from {@link #commitOrInform()}
      */
     protected void handleGitAPIException(GitAPIException e) {
         e.printStackTrace();
