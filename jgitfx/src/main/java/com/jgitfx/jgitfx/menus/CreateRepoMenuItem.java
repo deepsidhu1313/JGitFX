@@ -1,67 +1,58 @@
 package com.jgitfx.jgitfx.menus;
 
 import javafx.scene.Node;
-import javafx.stage.Window;
+import javafx.scene.control.MenuItem;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;
-import java.util.function.Consumer;
 
 /**
- * CreateRepoMenuItem is a MenuItem that will create a new repository and
- * return its output as a {@link Git} object when clicked via its {@link #postRepositoryCreation}.
+ * A {@link MenuItem} with a method that will create a new repository and
+ * return its output as a {@link Git} object.
+ *
+ * <p>To add this functionality, use</p>
+ * <pre>
+ *     {@code
+ *     CreateRepoMenuItem crmItem = // creation code;
+ *     crmItem.setOnAction(ae -> {
+ *        // code to get parent directory (probably via DirChooser
+ *        File parentDir = // gets parent directory
+ *
+ *        Git git = cmItem.createGitRepo(parentDir);
+ *
+ *        // any other code (if needed)...
+ *     });
+ *     }
+ * </pre>
  */
-public class CreateRepoMenuItem extends RepoMenuItemBase {
+public class CreateRepoMenuItem extends MenuItem {
 
-    /**
-     * The Consumer for the created repository as a {@link Git} object that is returned
-     */
-    private Consumer<Git> postRepositoryCreation;
-    public final Consumer<Git> getPostRepositoryCreation() { return postRepositoryCreation; }
-    public final void setPostRepositoryCreation(Consumer<Git> consumer) { postRepositoryCreation = consumer; }
-
-    /**
-     * Creates a CreateRepoMenuItem that, when clicked, will create a new repository in the returned directory.
-     * If the directory is "/home/userName/Directory", the created repository's path will be
-     * "/home/userName/Directory/.git"
-     *
-     * @param window the window used for {@link javafx.stage.DirectoryChooser#showDialog(Window)}. Usually, the
-     *               Application's primaryStage.
-     * @param directory the initial directory to display in the {@link javafx.stage.DirectoryChooser}.
-     * @param afterCreationConsumer the consumer to call when a repository is created
-     *                              in the form of a {@link Git} object.
-     */
-    public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationConsumer,
-                              String text, Node graphic) {
-        super(directory, text, graphic);
-        setPostRepositoryCreation(afterCreationConsumer);
-        setOnAction(ae -> {
-            File parentDir = createDirChooser("Choose the parent directory of the new Repository").showDialog(window);
-            if (parentDir != null) {
-                try {
-                    Git git = Git.init().setDirectory(parentDir).call();
-                    postRepositoryCreation.accept(git);
-                } catch (GitAPIException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+    public CreateRepoMenuItem(String text, Node graphic) {
+        super(text, graphic);
     }
 
     /**
-     * Constructs a CreateRepoMenuItem with the given text and no graphic.
+     * @param parentDirectory the directory in which the ".git" meta-directory should be. For example,
+     *                        assuming an absolute path of "/home/user/parentDirectory/", the git repository
+     *                        will be created with the path "/home/user/parentDirectory/.git/"
+     * @return the created {@link Git} object, or {@code null} if an error occurs.
      */
-    public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationConsumer, String text) {
-        this(window, directory, afterCreationConsumer, text, null);
+    public Git createGitRepo(File parentDirectory) {
+        try {
+            return Git.init().setDirectory(parentDirectory).call();
+        } catch (GitAPIException e) {
+            handleGitAPIException(e);
+            return null;
+        }
     }
 
     /**
-     * Constructs a CreateRepoMenuItem with the text "Create a new Repository..." and no graphic.
+     * If a {@link GitAPIException} is thrown, a developer can handle it here. Defaults to printing out stacktrace.
+     * @param e the exception that might be thrown from {@link #createGitRepo(File)}
      */
-    public CreateRepoMenuItem(Window window, File directory, Consumer<Git> afterCreationConsumer) {
-        this(window, directory, afterCreationConsumer, "Create a new Repository...");
-
+    protected void handleGitAPIException(GitAPIException e) {
+        e.printStackTrace();
     }
 
 }

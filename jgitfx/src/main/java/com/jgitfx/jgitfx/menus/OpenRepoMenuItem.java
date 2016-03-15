@@ -1,60 +1,54 @@
 package com.jgitfx.jgitfx.menus;
 
+import java.io.File;
 import javafx.scene.Node;
-import javafx.stage.Window;
+import javafx.scene.control.MenuItem;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
-import java.io.File;
-import java.util.function.Consumer;
-
 /**
- * OpenRepoMenuItem is a MenuItem that will open a repository from local storage and return
- * that opened repository as a {@link Git} object via its {@link #postOpenRepository}.
+ * A {@link MenuItem} with a method that will open a repository from local storage and return
+ * that opened repository as a {@link Git} object.
+ *
+ * <p>To add the functionality, use</p>
+ * <pre>
+ *     {@code
+ *     OpenRepoMenuItem ormItem = // creation code;
+ *     ormItem.setOnAction(ae -> {
+ *        // code to get git meta-directory (probably via DirChooser
+ *        File gitMetaDir = // gets git meta-directory
+ *
+ *        Git git = ormItem.openGitRepo(gitMetaDir);
+ *
+ *        // any other code (if needed)...
+ *     });
+ *     }
+ * </pre>
  */
-public class OpenRepoMenuItem extends RepoMenuItemBase {
+public class OpenRepoMenuItem extends MenuItem {
 
-    /**
-     * The Consumer for the opened repository as a {@link Git} object that is returned
-     */
-    private Consumer<Git> postOpenRepository;
-    public Consumer<Git> getPostOpenRepository() { return postOpenRepository; }
-    public void setPostOpenRepository(Consumer<Git> consumer) { postOpenRepository = consumer; }
-
-    /**
-     * Creates an OpenRepoMenuItem
-     * @param window the window to use in {@link javafx.stage.DirectoryChooser#showDialog(Window)}
-     * @param directory the initial directory to display when the {@link javafx.stage.DirectoryChooser} is shown.
-     * @param afterOpeningConsumer the consumer called with the returned {@link Git} object
-     */
-    public OpenRepoMenuItem(Window window, File directory, Consumer<Git> afterOpeningConsumer,
-                            String text, Node graphic) {
-        super(directory, text, graphic);
-        setPostOpenRepository(afterOpeningConsumer);
-        setOnAction(ae -> {
-            File gitRepoDir = createDirChooser("Open a Repository ('.git' folder)...").showDialog(window);
-            if (gitRepoDir != null && gitRepoDir.toString().endsWith(".git")) {
-                try {
-                    Git git = Git.init().setGitDir(gitRepoDir).call();
-                    postOpenRepository.accept(git);
-                } catch (GitAPIException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
+    public OpenRepoMenuItem(String text, Node graphic) {
+        super(text, graphic);
     }
 
     /**
-     * Constructs an OpenRepoMenuItem with the given text and no graphic.
+     * @param gitMetaDirectory the ".git" directory
+     * @return the Git object or null if an error occurs
      */
-    public OpenRepoMenuItem(Window window, File directory, Consumer<Git> afterOpeningFunction, String text) {
-        this(window, directory, afterOpeningFunction, text, null);
+    public Git openGitRepo(File gitMetaDirectory) {
+        try {
+            return Git.init().setGitDir(gitMetaDirectory).call();
+        } catch (GitAPIException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
-     * Constructs an OpenRepoMenuItem with the text "Open a Repository..." and no graphic.
+     * If a {@link GitAPIException} is thrown, a developer can handle it here. Defaults to printing out stacktrace.
+     * @param e the exception that might be thrown from {@link #openGitRepo(File)}
      */
-    public OpenRepoMenuItem(Window window, File directory, Consumer<Git> afterOpeningFunction) {
-        this(window, directory, afterOpeningFunction, "Open a Repository...");
+    protected void handleGitAPIException(GitAPIException e) {
+        e.printStackTrace();
     }
 }
