@@ -183,7 +183,7 @@ class JGitSimulationSpec extends Specification {
         file2.text += "some other changes that we will soon remove"
 
         when: "re-checkout file2 from HEAD"
-        git.checkout().setStartPoint("HEAD").addPath(file2.getRelativePath()).call()
+        git.checkout().addPath(file2.getRelativePath()).call()
 
         then: "File 2's text matches the unmodified text"
         file2.text == beforeChange
