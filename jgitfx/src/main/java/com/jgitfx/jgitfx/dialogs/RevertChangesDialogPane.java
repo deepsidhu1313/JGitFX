@@ -1,7 +1,8 @@
 package com.jgitfx.jgitfx.dialogs;
 
+import com.jgitfx.base.dialogs.RevertChangesDialogPaneBase;
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
-import javafx.scene.control.ButtonBar;
+import java.util.List;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -13,12 +14,18 @@ import org.reactfx.value.Val;
 /**
  * A basic implementation of {@link RevertChangesDialogPaneBase}.
  */
-public class RevertChangesDialogPane extends RevertChangesDialogPaneBase<SelectableFileViewer> {
+public class RevertChangesDialogPane extends RevertChangesDialogPaneBase {
 
+    // GUI components
+    private final SelectableFileViewer fileViewer;
+    public List<String> getSelectedFiles() {return fileViewer.getSelectedFiles(); }
+
+    // layout containers
     private final VBox vbox = new VBox();
 
-    public RevertChangesDialogPane(Val<Git> git, SelectableFileViewer fileViewer) {
-        super(git, fileViewer, new ButtonType("Revert", ButtonBar.ButtonData.YES));
+    public RevertChangesDialogPane(Val<Git> git, SelectableFileViewer fileViewer, ButtonType revertButtonType) {
+        super(git);
+        this.fileViewer = fileViewer;
 
         vbox.getChildren().addAll(
                 new Label("Revert selected files back to previous commit"),
@@ -27,17 +34,15 @@ public class RevertChangesDialogPane extends RevertChangesDialogPaneBase<Selecta
         setContent(vbox);
     }
 
-    @Override
     protected void displayFileViewer(Status status) {
-        if (!vbox.getChildren().contains(getFileViewer())) {
-            vbox.getChildren().set(1, getFileViewer());
+        if (!vbox.getChildren().contains(fileViewer)) {
+            vbox.getChildren().set(1, fileViewer);
         }
-        getFileViewer().refreshTree(status);
+        fileViewer.refreshTree(status);
     }
 
-    @Override
     protected void displayPlaceholder() {
-        if (vbox.getChildren().contains(getFileViewer())) {
+        if (vbox.getChildren().contains(fileViewer)) {
             vbox.getChildren().set(1, new StackPane(new Label("No changes detected...")));
         }
     }

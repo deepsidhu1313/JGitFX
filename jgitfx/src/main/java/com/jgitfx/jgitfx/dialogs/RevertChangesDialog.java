@@ -1,20 +1,37 @@
 package com.jgitfx.jgitfx.dialogs;
 
-import javafx.scene.control.Dialog;
-
-import java.util.Optional;
+import com.jgitfx.base.dialogs.RevertChangesDialogBase;
+import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.lib.Ref;
+import org.reactfx.value.Val;
 
 /**
- * A dialog for displaying subclasses of {@link RevertChangesDialogPaneBase}
+ * A basic implementation of {@link RevertChangesDialogBase}
  */
-public class RevertChangesDialog extends Dialog<Optional<RevertChangesResult>> {
+public class RevertChangesDialog extends RevertChangesDialogBase<RevertChangesResult, RevertChangesDialogPane> {
 
-    public RevertChangesDialog(RevertChangesDialogPaneBase pane) {
-        super();
-        setTitle("Revert local changes");
+    public RevertChangesDialog(Val<Git> git, Status firstStatus) {
+        super(git);
+        setTitle("Revert modified files");
         setResizable(true);
 
-        setDialogPane(pane);
-        setResultConverter(buttonType -> Optional.ofNullable(pane.getResult()));
+        ButtonType revertButtonType = new ButtonType("Revert...", ButtonBar.ButtonData.YES);
+        setDialogPane(new RevertChangesDialogPane(git, new SelectableFileViewer(firstStatus), revertButtonType));
+        setResultConverter(buttonType -> {
+           if (buttonType.equals(revertButtonType)) {
+               return revertChanges();
+           } else {
+               return null;
+           }
+        });
+    }
+
+    @Override
+    protected RevertChangesResult createResult(Ref ref) {
+        return new RevertChangesResult(getDialogPane().getSelectedFiles());
     }
 }
