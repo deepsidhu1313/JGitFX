@@ -32,6 +32,7 @@ import org.reactfx.value.Val;
  * <p>Though the JGit code implementation should suffice for most use cases, the JGit code can be customized via
  * {@link #setWorkingTreeIterator(WorkingTreeIterator)} for the {@link AddCommand} and
  * {@link #configureCommitCommand(CommitCommand)} for the {@link CommitCommand}</p>
+ *
  * @param <R> the return result
  * @param <P> the pane class to use for the DialogPane
  */
