@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @param <F> the object to use for displaying which files are selected
  */
-public abstract class RevertChangesDialogPaneBase<F extends Node & FileSelecter> extends DialogPane {
+public abstract class RevertChangesDialogPaneBaseOld<F extends Node & FileSelecter> extends DialogPane {
 
     private final Val<Git> git;
     private Git getGitOrThrow() { return git.getOrThrow(); }
@@ -39,7 +39,7 @@ public abstract class RevertChangesDialogPaneBase<F extends Node & FileSelecter>
     private RevertChangesResult result;
     public final RevertChangesResult getResult() { return result; }
 
-    public RevertChangesDialogPaneBase(Val<Git> git, F fileSelector, ButtonType revertButtonType) {
+    public RevertChangesDialogPaneBaseOld(Val<Git> git, F fileSelector, ButtonType revertButtonType) {
         super();
         this.git = git;
         this.fileViewer = fileSelector;
@@ -55,7 +55,6 @@ public abstract class RevertChangesDialogPaneBase<F extends Node & FileSelecter>
 
     private void revertChanges() {
         CheckoutCommand checkout = getGitOrThrow().checkout();
-        checkout.setStartPoint("HEAD");
         List<String> selectedFiles = fileViewer.getSelectedFiles();
         selectedFiles.forEach(checkout::addPath);
         result = new RevertChangesResult(selectedFiles);
