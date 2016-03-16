@@ -20,7 +20,7 @@ import org.reactfx.value.Val;
  *     {@code
  *     CommitDialog dialog = // creation code;
  *     dialog.setResultConverter(buttonType -> {
- *         if (buttonType.equals(dialog.getDialogPane().getCommitButton())) {
+ *         if (buttonType.equals(commitButtonType) {
  *             return dialog.addAndCommitSelectedFiles();
  *         } else {
  *             return null;

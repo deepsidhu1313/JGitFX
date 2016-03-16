@@ -12,8 +12,8 @@ import org.reactfx.value.Val;
  * A base CommitDialogPane class that is used alongside of {@link CommitDialogBase} to handle most of the JGit code
  * needed to add and then commit files.
  *
- * <p>Note: a subclasses will need to add the revert button via {@link DialogPane#getButtonTypes()}.
- * Additionally, they will want to bind the disable property to the fileViewer:</p>
+ * <p>Note: a subclasses will need to add the commit button via {@link DialogPane#getButtonTypes()}.
+ * Additionally, they will want to bind the button's disable property to the fileViewer:</p>
  * <pre>
  *     {@code
  *     public SubClassCommitDialogPane(args...) {
