@@ -1,8 +1,11 @@
 package com.jgitfx.jgitfx.dialogs;
 
+import com.jgitfx.base.dialogs.CommitDialogPaneBase;
 import com.jgitfx.jgitfx.fileviewers.SelectableFileViewer;
+import java.util.List;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
-import javafx.scene.control.ButtonBar;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -17,31 +20,38 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.reactfx.value.Val;
 
 /**
- * A basic implementation of {@link CommitDialogPaneBaseOld}.
+ * A basic implementation of {@link CommitDialogPaneBase}.
  */
-public class CommitDialogPane extends CommitDialogPaneBaseOld<SelectableFileViewer> {
+public class CommitDialogPane extends CommitDialogPaneBase {
 
     // GUI components
+    private final SelectableFileViewer fileViewer;
+    public List<String> getSelectedFiles() { return fileViewer.getSelectedFiles(); }
+
     private final TextArea messageArea = new TextArea();
-    @Override protected String getCommitMessage() { return messageArea.getText(); }
+    public String getCommitMessage() { return messageArea.getText(); }
 
     private final CheckBox amendCheckBox = new CheckBox("Amend commit");
-    @Override protected boolean isAmendCommit() { return amendCheckBox.isSelected(); }
+    public boolean isAmendCommit() { return amendCheckBox.isSelected(); }
 
     // TODO: implement GUI component for author
-    @Override protected PersonIdent getAuthor() { return new PersonIdent("", ""); }
+    public PersonIdent getAuthor() { return new PersonIdent("", ""); }
+
+    // TODO: implement GUI component for committer
+    public PersonIdent getCommitter() { return new PersonIdent("", ""); }
 
     // Layout Handlers
     private final BorderPane borderPane = new BorderPane();
-    protected final BorderPane getBorderPane() { return borderPane; }
-
     private final SplitPane splitter = new SplitPane();
-    protected final SplitPane getSplitter() { return splitter; }
 
-    public CommitDialogPane(Val<Git> git, SelectableFileViewer fileViewer) {
-        super(git, fileViewer, new ButtonType("Commit", ButtonBar.ButtonData.YES));
+    public CommitDialogPane(Val<Git> git, SelectableFileViewer fileViewer, ButtonType commitButton) {
+        super(git);
+        this.fileViewer = fileViewer;
 
-        getButtonTypes().addAll(ButtonType.CANCEL);
+        getButtonTypes().addAll(commitButton, ButtonType.CANCEL);
+        Button button = (Button) lookupButton(commitButton);
+        // commit button is disabled when there are no selected files
+        button.disableProperty().bind(Bindings.not(fileViewer.hasSelectedFilesProperty()));
 
         splitter.setOrientation(Orientation.VERTICAL);
         splitter.getItems().addAll(
@@ -58,22 +68,20 @@ public class CommitDialogPane extends CommitDialogPaneBaseOld<SelectableFileView
         borderPane.setCenter(splitter);
         borderPane.setRight(new VBox(
                 amendCheckBox
-                // TODO: author content here
+                // TODO: author & committer GUI components here
         ));
         setContent(borderPane);
     }
 
-    @Override
-    protected void displayFileViewer(Status status) {
-        if (!splitter.getItems().contains(getFileViewer())) {
-            splitter.getItems().set(0, getFileViewer());
+    public void displayFileViewer(Status status) {
+        if (!splitter.getItems().contains(fileViewer)) {
+            splitter.getItems().set(0, fileViewer);
         }
-        getFileViewer().refreshTree(status);
+        fileViewer.refreshTree(status);
     }
 
-    @Override
-    protected void displayPlaceHolder() {
-        if (splitter.getItems().contains(getFileViewer())) {
+    public void displayPlaceHolder() {
+        if (splitter.getItems().contains(fileViewer)) {
             splitter.getItems().set(0, new StackPane(new Label("No changes detected...")));
         }
     }
