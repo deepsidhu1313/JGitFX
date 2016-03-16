@@ -1,4 +1,4 @@
-package com.jgitfx.jgitfx;
+package com.jgitfx.base;
 
 import java.io.File;
 import java.util.List;
