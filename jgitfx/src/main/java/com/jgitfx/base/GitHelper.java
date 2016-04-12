@@ -920,8 +920,8 @@ public class GitHelper {
      * @return the results of the push
      * @throws GitAPIException
      */
-    public static Iterable<PushResult> push(Git git) throws GitAPIException {
-        return push(git, Constants.DEFAULT_REMOTE_NAME);
+    public static Iterable<PushResult> pushAll(Git git) throws GitAPIException {
+        return pushAll(git, Constants.DEFAULT_REMOTE_NAME);
     }
 
     /**
@@ -931,12 +931,20 @@ public class GitHelper {
      * @return the results of the push
      * @throws GitAPIException
      */
-    public static Iterable<PushResult> push(Git git, String remoteName) throws GitAPIException {
+    public static Iterable<PushResult> pushAll(Git git, String remoteName) throws GitAPIException {
         return git.push()
                 .setRemote(remoteName)
                 .setPushAll()
                 .setPushTags()
                 .call();
+    }
+
+    public static Iterable<PushResult> push(Git git) throws GitAPIException {
+        return push(git, Constants.DEFAULT_REMOTE_NAME);
+    }
+
+    public static Iterable<PushResult> push(Git git, String remoteName) throws GitAPIException {
+        return git.push().setRemote(remoteName).call();
     }
 
     /**
