@@ -1,9 +1,9 @@
 # JGitFX
 JGitFX provides easy Git integration (via JGit) with your JavaFX application (view commit history, add Git menu items or buttons, etc.). This is NOT another Git Client.
 
-## Development Postponed
+## Development Postponed Indefinitely
 
-Due to more constraints on my time, I've postponed further development on this project until at least July 2016. 
+Due to more constraints on my time, I've postponed further development on this project indefinitely. If another wants to continue it or use the "JGitFX" name for some other related project, I'm open to transferring it. 
 
 ## ToC
 
